@@ -144,9 +144,9 @@ footer{margin-top:18px;color:var(--muted);font-size:12px}
     <!-- Stufe 2: Resonanzkurve -->
     <section class="card" data-panel="2" aria-labelledby="h-res">
       <h2 id="h-res">Resonanzkurve</h2>
-      <p class="hint">Wähle ein Pendel und tippe ins Diagramm, um deine Vorhersage zu setzen.</p>
+      <p class="hint">Amplitude in Abhängigkeit von der Erregerfrequenz. Für einzelne Messpunkte: Pendel wählen, f<sub>E</sub> einstellen, warten, speichern.</p>
       <div class="chips" role="group" aria-label="Pendel wählen" id="chips2"></div>
-      <canvas id="chartRes" class="chart" role="img" aria-label="Amplitude in Abhängigkeit von der Erregerfrequenz mit Vorhersagen und Messpunkten"></canvas>
+      <canvas id="chartRes" class="chart" role="img" aria-label="Amplitude in Abhängigkeit von der Erregerfrequenz mit Messpunkten"></canvas>
       <div class="row" style="margin-top:12px">
         <button class="btn primary" id="btnSave2" type="button">Messpunkt speichern</button>
         <button class="btn" id="btnClear2" type="button">Punkte löschen</button>
@@ -167,17 +167,11 @@ footer{margin-top:18px;color:var(--muted);font-size:12px}
       <canvas id="chartYT" class="chart" role="img" aria-label="Auslenkung von Aufhängung und Pendel über der Zeit"></canvas>
       <label class="check"><input type="checkbox" id="chkReal3"> Echte Größen anzeigen (nicht gestreckt)</label>
       <div id="phaseBox3" hidden>
-        <h3>Phasenverschiebung Δφ in Abhängigkeit von f<sub>E</sub></h3>
+        <h3>Phasenverschiebung Δφ</h3>
         <div class="readouts" style="margin-top:4px">
           <div class="readout"><span>Pendel hinkt hinterher um</span><output id="phiOut3">–</output></div>
           <div class="readout"><span>Zustand</span><output id="steady3" style="font-size:1rem;font-family:var(--font-body)">–</output></div>
         </div>
-        <canvas id="chartPhase" class="chart" style="margin-top:12px" role="img" aria-label="Phasenverschiebung in Abhängigkeit von der Erregerfrequenz"></canvas>
-        <div class="row" style="margin-top:12px">
-          <button class="btn primary" id="btnSave3" type="button">Phase speichern</button>
-          <button class="btn" id="btnClear3" type="button">Punkte löschen</button>
-        </div>
-        <label class="check"><input type="checkbox" id="chkTheory3"> Theoriekurve einblenden</label>
       </div>
       <p class="msg" id="msg3" role="status"></p>
     </section>
@@ -186,11 +180,11 @@ footer{margin-top:18px;color:var(--muted);font-size:12px}
     <section class="card" data-panel="4" id="chartCard4" aria-labelledby="h-c4">
       <h2 id="h-c4">Messung</h2>
       <div id="c4massChart">
-        <p class="hint">Amplitude des grauen Pendels. Jeder gespeicherte Punkt zählt.</p>
+        <p class="hint">Amplitude des grauen Pendels. Speichere Messpunkte, um das Maximum zu finden.</p>
         <canvas id="chartMass" class="chart" role="img" aria-label="Gespeicherte Messpunkte des unbekannten Pendels"></canvas>
         <div class="row" style="margin-top:12px">
           <button class="btn primary" id="btnSave4" type="button">Messpunkt speichern</button>
-          <span class="status" id="count4">0 Messpunkte</span>
+          <button class="btn" id="btnClear4" type="button">Punkte löschen</button>
         </div>
       </div>
       <div id="c4nodChart">
@@ -235,19 +229,25 @@ footer{margin-top:18px;color:var(--muted);font-size:12px}
     <!-- ================= Stufe 2 ================= -->
     <section class="card task" data-panel="2" aria-labelledby="h-t2">
       <h2 id="h-t2">Auftrag 2 · Vorhersagen und messen</h2>
-      <p>Jetzt treibt ein Motor die Aufhängung mit der <b>Erregerfrequenz f<sub>E</sub></b> an. Zwei Pendel mit gleicher Feder hängen daran: R1 (0,80 kg) und R4 (0,20 kg).</p>
+      <p>Jetzt treibt ein Motor die Aufhängung mit der <b>Erregerfrequenz f<sub>E</sub></b> an. Zwei Pendel mit gleicher Feder hängen daran: R1 (0,80 kg) und R2 (0,20 kg).</p>
       <ol>
-        <li><b>Vorhersage:</b> Bei welcher Erregerfrequenz schwingt R1 am stärksten, bei welcher R4? Wähle im Diagramm das Pendel aus und tippe auf die passende Stelle. Begründe kurz mit deinen Erfahrungen aus Stufe 1.
+        <li><b>Vorhersage:</b> Der Motor fährt die Erregerfrequenz langsam von klein nach groß. Welches Pendel schwingt schon bei der <b>kleineren</b> Erregerfrequenz am stärksten?
+          <div class="seg" role="group" aria-label="Vorhersage" style="margin-top:8px">
+            <button class="btn" type="button" data-pred2="R1" aria-pressed="false">R1 (0,80 kg)</button>
+            <button class="btn" type="button" data-pred2="R2" aria-pressed="false">R2 (0,20 kg)</button>
+            <button class="btn" type="button" data-pred2="gleich" aria-pressed="false">beide gleich</button>
+          </div>
+          Begründe kurz mit deinen Erfahrungen aus Stufe 1.
           <textarea id="reason2" placeholder="Ich vermute … weil …" aria-label="Begründung der Vorhersage"></textarea></li>
         <li><b>Messen:</b> Starte den Frequenzdurchlauf. Vergleiche die Messung mit deiner Vorhersage.</li>
         <li class="lockable"><span class="lk">🔒 </span>Berechne die Eigenfrequenzen f<sub>0</sub> beider Pendel mit der Formel und vergleiche sie mit den gemessenen Maxima.</li>
-        <li class="lockable"><span class="lk">🔒 </span>Erhöhe die Dämpfung und miss erneut. Wie ändern sich Höhe, Breite und Lage der Resonanzkurve?</li>
+        <li class="lockable"><span class="lk">🔒 </span>Erhöhe die Dämpfung und miss erneut. Wie ändern sich Höhe und Breite der Resonanzkurven?</li>
       </ol>
       <details class="tip"><summary>Tipp zur Vorhersage</summary><p>Erinnere dich an Stufe 1: Musstest du beim schweren Pendel schneller oder langsamer ziehen als beim leichten?</p></details>
       <details class="tip" id="terms2" hidden><summary>Fachbegriffe</summary>
         <p><b>Eigenfrequenz f<sub>0</sub>:</b> Frequenz, mit der ein Pendel nach einem Anstoß von selbst schwingt.</p>
         <p><b>Erregerfrequenz f<sub>E</sub>:</b> Frequenz, mit der der Antrieb das Pendel anregt.</p>
-        <p><b>Resonanz:</b> Stimmt f<sub>E</sub> mit f<sub>0</sub> (fast) überein, wird die Amplitude maximal.</p>
+        <p><b>Resonanz:</b> Stimmt f<sub>E</sub> mit f<sub>0</sub> überein, wird die Amplitude maximal.</p>
       </details>
     </section>
     <section class="card" data-panel="2" aria-labelledby="h-c2">
@@ -267,8 +267,8 @@ footer{margin-top:18px;color:var(--muted);font-size:12px}
         </div>
       </div>
       <div class="field">
-        <div class="fieldhead"><label for="b2">Dämpfung b</label><output id="b2out" class="val" for="b2">0,5 N·s/m</output></div>
-        <input id="b2" type="range" min="0.3" max="1.5" step="0.1" value="0.5">
+        <div class="fieldhead"><label for="b2">Dämpfung b</label><output id="b2out" class="val" for="b2">0,3 N·s/m</output></div>
+        <input id="b2" type="range" min="0.3" max="1" step="0.1" value="0.3">
         <div class="scale"><span>schwach</span><span>stark</span></div>
       </div>
       <div class="field">
@@ -280,12 +280,8 @@ footer{margin-top:18px;color:var(--muted);font-size:12px}
         </div>
       </div>
       <div class="field">
-        <span class="lbl" style="font-weight:500">Pendel anzeigen</span>
-        <div class="seg" role="group" aria-label="Pendel ein- und ausblenden" id="toggles2"></div>
-      </div>
-      <div class="field">
         <button class="btn primary" id="btnSweep2" type="button">Frequenzdurchlauf</button>
-        <p class="note" style="margin:0">Im Zeitraffer: Bei jeder Frequenz wird gewartet, bis die Pendel eingeschwungen sind, dann wird gemessen. Dauer etwa 20 Sekunden.</p>
+        <p class="note" style="margin:0">Die Erregerfrequenz steigt in kleinen Schritten von 0,4 auf 2,8 Hz. Bei jeder Frequenz wird gewartet, bis die Pendel eingeschwungen sind, dann wird gemessen. Bei Tempo 4× dauert das etwa 1–2 Minuten.</p>
       </div>
       <div class="field" style="gap:0">
         <h3 style="margin-top:0">Lösungshilfen</h3>
@@ -302,12 +298,18 @@ footer{margin-top:18px;color:var(--muted);font-size:12px}
       <h2 id="h-t3">Auftrag 3 · Warum gerade bei f<sub>0</sub>?</h2>
       <p>Das Pendel hat m = 0,50 kg, also f<sub>0</sub> ≈ 1,01 Hz.</p>
       <ol>
-        <li>Stelle das Tempo auf ½×. Beobachte bei f<sub>E</sub> = 0,5 Hz, 1,0 Hz und 2,0 Hz, wie sich Aufhängung und Pendel zueinander bewegen: <b>gleichzeitig, versetzt oder gegeneinander?</b> Die Pfeile und das y-t-Diagramm helfen dir.</li>
-        <li>Schalte „Phasenverschiebung messen“ ein. Speichere Δφ für mindestens sechs Frequenzen und beschreibe den Verlauf.</li>
+        <li>Stelle das Tempo auf ½×. Beobachte bei f<sub>E</sub> = 0,5 Hz, bei f<sub>E</sub> = f<sub>0</sub> (Knopf im Bedienfeld) und bei 2,0 Hz, wie sich Aufhängung und Pendel zueinander bewegen: <b>gleichzeitig, versetzt oder gegeneinander?</b> Die Pfeile und das y-t-Diagramm helfen dir.</li>
+        <li>Schalte „Phasenverschiebung anzeigen“ ein. Lies Δφ für die drei Frequenzen ab und notiere die Werte. Beschreibe, wie sich Δφ ändert, wenn f<sub>E</sub> größer wird.</li>
         <li>Schalte die Anzeige „Antrieb hilft / bremst“ ein. Erkläre damit, warum die Amplitude genau bei f<sub>E</sub> = f<sub>0</sub> am größten wird.</li>
-        <li>Wie verändert eine stärkere Dämpfung den Verlauf von Δφ?</li>
       </ol>
-      <details class="tip"><summary>Tipp: Einschwingen</summary><p>Nach jeder Änderung von f<sub>E</sub> braucht das Pendel einige Sekunden, bis es gleichmäßig schwingt. Speichere erst, wenn „eingeschwungen“ angezeigt wird.</p></details>
+      <details class="tip"><summary>Was ist die Phasenverschiebung Δφ?</summary>
+        <p>Sie gibt an, wie weit das Pendel der Aufhängung zeitlich hinterherläuft, als Anteil einer ganzen Schwingung. Eine ganze Schwingung entspricht 360°.</p>
+        <p><b>Δφ = 0°:</b> Pendel und Aufhängung sind gleichzeitig oben und gleichzeitig unten.<br>
+        <b>Δφ = 90°:</b> Das Pendel ist eine Viertelschwingung später oben als die Aufhängung.<br>
+        <b>Δφ = 180°:</b> Ist die Aufhängung oben, ist das Pendel unten. Sie schwingen gegeneinander.</p>
+        <p>Im y-t-Diagramm erkennst du Δφ am Abstand der beiden Hochpunkte.</p>
+      </details>
+      <details class="tip"><summary>Tipp: Einschwingen</summary><p>Nach jeder Änderung von f<sub>E</sub> braucht das Pendel einige Sekunden, bis es gleichmäßig schwingt. Lies Δφ erst ab, wenn „eingeschwungen“ angezeigt wird.</p></details>
       <details class="tip"><summary>Tipp: hilft oder bremst?</summary><p>Ist die Aufhängung oben, zieht die Feder das Pendel stärker nach oben. Bewegt sich das Pendel in diesem Moment nach oben, wird es schneller: Der Antrieb führt Energie zu. Bewegt es sich gerade nach unten, wird es gebremst.</p></details>
     </section>
     <section class="card" data-panel="3" aria-labelledby="h-c3">
@@ -325,11 +327,7 @@ footer{margin-top:18px;color:var(--muted);font-size:12px}
           <button class="btn small" type="button" data-step3="0.01">+0,01</button>
           <button class="btn small" type="button" data-step3="0.1">+0,10</button>
         </div>
-      </div>
-      <div class="field">
-        <div class="fieldhead"><label for="b3">Dämpfung b</label><output id="b3out" class="val" for="b3">0,5 N·s/m</output></div>
-        <input id="b3" type="range" min="0.3" max="1.5" step="0.1" value="0.5">
-        <div class="scale"><span>schwach</span><span>stark</span></div>
+        <div class="row"><button class="btn" type="button" id="btnF03">f<sub>E</sub> = f<sub>0</sub> einstellen</button></div>
       </div>
       <div class="field">
         <span class="lbl" style="font-weight:500">Tempo</span>
@@ -342,7 +340,7 @@ footer{margin-top:18px;color:var(--muted);font-size:12px}
       </div>
       <div class="field" style="gap:0">
         <label class="check"><input type="checkbox" id="chkArrows3" checked> Bewegungspfeile anzeigen</label>
-        <label class="check"><input type="checkbox" id="chkPhase3"> Phasenverschiebung messen</label>
+        <label class="check"><input type="checkbox" id="chkPhase3"> Phasenverschiebung anzeigen</label>
         <label class="check"><input type="checkbox" id="chkLamp3"> Anzeige „Antrieb hilft / bremst“</label>
       </div>
     </section>
@@ -352,23 +350,16 @@ footer{margin-top:18px;color:var(--muted);font-size:12px}
       <h2 id="h-t4">Auftrag 4 · Challenges</h2>
       <div class="subtabs" role="group" aria-label="Challenge wählen">
         <button class="btn" type="button" data-tab4="mass">A · Unbekannte Masse</button>
-        <button class="btn" type="button" data-tab4="bridge">B · Brücke retten</button>
-        <button class="btn" type="button" data-tab4="nod">C · Ohne Dämpfung</button>
+        <button class="btn" type="button" data-tab4="nod">B · Ohne Dämpfung</button>
       </div>
       <div data-sub4="mass">
         <h3>Challenge A · Die unbekannte Masse</h3>
-        <p>Das graue Pendel hat eine unbekannte Masse. Die Feder hat wie immer D = 20 N/m. Bestimme m mit <b>möglichst wenigen Messpunkten</b>.</p>
+        <p>Das graue Pendel hat eine unbekannte Masse. Die Feder hat wie immer D = 20 N/m. Bestimme die Masse m.</p>
         <details class="tip"><summary>Tipp 1</summary><p>Suche zuerst grob in Schritten von 0,1 Hz, dann fein um das Maximum herum.</p></details>
         <details class="tip"><summary>Tipp 2</summary><p>Stelle T = 2π·√(m/D) nach m um. Mit T = 1/f<sub>0</sub> erhältst du m = D / (2π·f<sub>0</sub>)².</p></details>
       </div>
-      <div data-sub4="bridge">
-        <h3>Challenge B · Brücke retten</h3>
-        <p>Menschen laufen im Gleichschritt über eine Fußgängerbrücke und regen sie genau mit ihrer Eigenfrequenz an. Ingenieure bauen Dämpfer ein.</p>
-        <p>Wähle die Dämpfung so, dass die Amplitude <b>unter 3 cm</b> bleibt. Dämpfer sind teuer: Nimm <b>so wenig Dämpfung wie möglich</b>.</p>
-        <details class="tip"><summary>Tipp</summary><p>Nach jeder Änderung braucht die Brücke Zeit, bis sie eingeschwungen ist. Bei Resonanz gilt ungefähr: doppelte Dämpfung, halbe Amplitude.</p></details>
-      </div>
       <div data-sub4="nod">
-        <h3>Challenge C · Ganz ohne Dämpfung</h3>
+        <h3>Challenge B · Ganz ohne Dämpfung</h3>
         <ol>
           <li>Stelle f<sub>E</sub> = 1,01 Hz ein (= f<sub>0</sub>) und tippe auf „Ruhe herstellen“. Beschreibe, wie sich die Amplitude entwickelt. Was würde mit einem echten Bauteil passieren?</li>
           <li>Stelle f<sub>E</sub> = 1,10 Hz ein und tippe wieder auf „Ruhe herstellen“. Beschreibe den Verlauf der Amplitude.</li>
@@ -395,11 +386,6 @@ footer{margin-top:18px;color:var(--muted);font-size:12px}
           <button class="btn small" type="button" data-step4="0.1">+0,10</button>
         </div>
       </div>
-      <div class="field" id="b4box">
-        <div class="fieldhead"><label for="b4">Dämpfung b</label><output id="b4out" class="val" for="b4">0,15 N·s/m</output></div>
-        <input id="b4" type="range" min="0.1" max="2" step="0.05" value="0.15">
-        <div class="scale"><span>schwach</span><span>stark</span></div>
-      </div>
       <div class="field">
         <span class="lbl" style="font-weight:500">Tempo</span>
         <div class="seg" role="group" aria-label="Simulationstempo">
@@ -417,14 +403,6 @@ footer{margin-top:18px;color:var(--muted);font-size:12px}
         </div>
         <p class="feedback" id="fbM4" role="status"></p>
       </div>
-      <div class="field" id="bridgeCheck4">
-        <div class="readouts" style="margin-top:0">
-          <div class="readout"><span>Amplitude der Brücke</span><output id="ampB4">0,0 cm</output></div>
-          <div class="readout"><span>Zustand</span><output id="steadyB4" style="font-size:1rem;font-family:var(--font-body)">–</output></div>
-        </div>
-        <div class="row"><button class="btn primary" id="btnCheckB4" type="button">Prüfen</button></div>
-        <p class="feedback" id="fbB4" role="status"></p>
-      </div>
     </section>
   </div>
 </main>
@@ -436,7 +414,7 @@ footer{margin-top:18px;color:var(--muted);font-size:12px}
 'use strict';
 /* ================= Physik ================= */
 var D=20, F_MIN=0.4, F_MAX=2.8, PX=14, BK=0.1, NB=80;
-var MASSES=[0.8,0.5,0.3,0.2,0.1];
+var MASSES=[0.8,0.2];
 function f0of(m){ return Math.sqrt(D/m)/(2*Math.PI); }
 function thAmp(m,b,A,f){
   var w0sq=D/m, g=b/m, w=2*Math.PI*f, d=w0sq-w*w, den=Math.sqrt(d*d+g*g*w*w);
@@ -572,16 +550,15 @@ function say(id,t,ms){
 /* ================= Zustand der Stufen ================= */
 var stage=1;
 var st1={m:0.5,done:{}};
-var st2={active:[true,false,false,true,false],sel:0,preds:[null,null,null,null,null],pts:[[],[],[],[],[]],b:0.5,f:1.0,
-  unlocked:false,swept:false,sw:null,ymax:5};
-var st3={b:0.5,f:0.5,pts:[]};
-var st4={tab:'mass',mass:0,mpts:[],msaves:0,fm:1.0,fn:1.01,bb:0.15,solved:false};
-function newMass(){ st4.mass=Math.round((0.15+Math.random()*0.75)*100)/100; st4.mpts=[]; st4.msaves=0; st4.solved=false; }
+var st2={sel:0,pred:null,pts:[[],[]],b:0.3,f:1.0,unlocked:false,swept:false,sw:null,ymax:5};
+var st3={b:0.5,f:0.5};
+var st4={tab:'mass',mass:0,mpts:[],fm:1.0,fn:1.01};
+function newMass(){ st4.mass=Math.round((0.15+Math.random()*0.75)*100)/100; st4.mpts=[]; }
 newMass();
  
 /* ================= Zeichnen ================= */
 var stageCv=$('stage'), STAGE_H=470, sctx=null, sW=600;
-var charts={chartRes:{h:290},chartYT:{h:220},chartPhase:{h:290},chartMass:{h:290},chartAmpT:{h:290}};
+var charts={chartRes:{h:290},chartYT:{h:220},chartMass:{h:290},chartAmpT:{h:290}};
 var COL={r:[]}, FONT='sans-serif', MONO='monospace';
 function readColors(){
   var cs=getComputedStyle(document.documentElement);
@@ -633,7 +610,7 @@ function rigCfg(){
   if(stage===1){
     c.idx=[0]; c.colors=[COL.r[1]]; c.labels=['']; c.subs=[fmt(sim.m[0],2)+' kg']; c.goal=8; c.top='Du bist der Antrieb';
   } else if(stage===2){
-    for(var i=0;i<5;i++) if(st2.active[i]){ c.idx.push(i); c.colors.push(COL.r[i]); c.labels.push('R'+(i+1)); c.subs.push(fmt(MASSES[i],2)+' kg'); }
+    for(var i=0;i<2;i++){ c.idx.push(i); c.colors.push(COL.r[i]); c.labels.push('R'+(i+1)); c.subs.push(fmt(MASSES[i],2)+' kg'); }
     c.sel=st2.sel; c.ymax=st2.ymax; c.f0=st2.unlocked && $('chkF02').checked;
   } else if(stage===3){
     c.idx=[0]; c.colors=[COL.r[1]]; c.labels=['']; c.subs=['0,50 kg'];
@@ -641,7 +618,6 @@ function rigCfg(){
   } else {
     c.idx=[0];
     if(st4.tab==='mass'){ c.colors=[COL.q]; c.labels=['?']; c.subs=['m = ?']; c.ymax=5; }
-    else if(st4.tab==='bridge'){ c.colors=[COL.r[0]]; c.labels=['Brücke']; c.subs=['0,50 kg']; c.ymax=10; c.limit=3; c.top='Gleichschritt: f = '+fmt(sim.f,2)+' Hz'; }
     else { c.colors=[COL.r[1]]; c.labels=['']; c.subs=['0,50 kg, b = 0']; c.ymax=10; }
   }
   if(!c.top) c.top='Motor: f = '+fmt(sim.f,2)+' Hz';
@@ -743,7 +719,7 @@ function drawStage(){
     ctx.fillStyle=help?COL.good:COL.bad; rrect(ctx,lx,ly,lw,30,15); ctx.fill();
     ctx.fillStyle=COL.surface; ctx.font='600 14px '+FONT; ctx.textAlign='center'; ctx.textBaseline='middle';
     ctx.fillText(txt,lx+lw/2,ly+15); ctx.textBaseline='alphabetic';
-    if(frac!==null){ ctx.fillStyle=COL.ink; ctx.font='500 12px '+FONT; ctx.fillText('hilft '+fmt(frac*100,0)+' % der Zeit',lx+lw/2,ly+48); }
+    if(frac!==null){ ctx.fillStyle=COL.ink; ctx.font='500 12px '+FONT; ctx.fillText('hilft '+fmt(Math.round(frac*20)*5,0)+' % der Zeit',lx+lw/2,ly+48); }
   }
   if(stage===1){
     var hf=handFreq(); ctx.textAlign='right'; ctx.fillStyle=COL.ink; ctx.font='600 15px '+MONO;
@@ -820,32 +796,17 @@ function drawChartRes(){
   var ctx=C.ctx, ax=axes(ctx,C.w,C.h,Object.assign({},RES_AX,{ymax:st2.ymax,ystep:niceStep(st2.ymax)}));
   var i, total=0;
   if(st2.unlocked && $('chkTh2').checked){
-    for(i=0;i<5;i++) if(st2.active[i]) (function(m){ plotFn(ctx,ax,function(f){ return thAmp(m,sim.b,sim.A,f); },COL.r[i]); })(MASSES[i]);
+    for(i=0;i<2;i++) (function(m){ plotFn(ctx,ax,function(f){ return thAmp(m,sim.b,sim.A,f); },COL.r[i]); })(MASSES[i]);
   }
   if(st2.unlocked && $('chkF02').checked){
-    for(i=0;i<5;i++) if(st2.active[i]){
+    for(i=0;i<2;i++){
       var x=ax.X(f0of(MASSES[i])), yb=ax.T+ax.ph;
       ctx.fillStyle=COL.r[i]; ctx.beginPath(); ctx.moveTo(x,yb-10); ctx.lineTo(x-6,yb); ctx.lineTo(x+6,yb); ctx.closePath(); ctx.fill();
     }
   }
-  for(i=0;i<5;i++){
-    if(!st2.active[i]) continue;
-    var pf=st2.preds[i];
-    if(pf!==null){
-      var px=ax.X(pf);
-      ctx.strokeStyle=COL.r[i]; ctx.lineWidth=2.5; ctx.setLineDash([2,5]); ctx.lineCap='round';
-      ctx.beginPath(); ctx.moveTo(px,ax.T+16); ctx.lineTo(px,ax.T+ax.ph); ctx.stroke(); ctx.setLineDash([]); ctx.lineCap='butt';
-      ctx.fillStyle=COL.r[i]; ctx.font='600 11px '+FONT; ctx.textAlign='center';
-      ctx.fillText('Vorhersage R'+(i+1),clamp(px,ax.L+40,ax.L+ax.pw-40),ax.T+10);
-    }
-    total+=st2.pts[i].length; plotPts(ctx,ax,st2.pts[i],COL.r[i],'a');
-  }
+  for(i=0;i<2;i++){ total+=st2.pts[i].length; plotPts(ctx,ax,st2.pts[i],COL.r[i],'a'); }
   cursor(ctx,ax,sim.f,amp(st2.sel),COL.r[st2.sel]);
-  if(!total){
-    var miss=missingPreds();
-    emptyText(ctx,ax,miss.length?'Tippe hier, um die Vorhersage für R'+(st2.sel+1)+' zu setzen':'Frequenzdurchlauf starten oder Messpunkte speichern');
-  }
-  C.ax=ax;
+  if(!total) emptyText(ctx,ax,st2.pred===null&&!st2.swept?'Wähle zuerst im Auftrag deine Vorhersage':'Frequenzdurchlauf starten oder Messpunkte speichern');
 }
 function drawChartYT(){
   var C=charts.chartYT; if(!C.ctx) return;
@@ -868,16 +829,6 @@ function drawChartYT(){
   ctx.fillStyle=COL.ink; ctx.fillRect(ax.L+10,ax.T+6,16,3); ctx.fillText('Aufhängung',ax.L+32,ax.T+12);
   ctx.fillStyle=COL.r[1]; ctx.fillRect(ax.L+120,ax.T+6,16,3); ctx.fillText('Pendel',ax.L+142,ax.T+12);
 }
-function drawChartPhase(){
-  var C=charts.chartPhase; if(!C.ctx) return;
-  var ctx=C.ctx, ax=axes(ctx,C.w,C.h,{xmin:F_MIN,xmax:F_MAX,xstep:0.5,ymin:0,ymax:180,ystep:45,
-    xlabel:'Erregerfrequenz f_E in Hz',ylabel:'Δφ in Grad',yfmt:function(v){ return fmt(v,0)+'°'; }});
-  if($('chkTheory3').checked) plotFn(ctx,ax,function(f){ return thPhase(0.5,sim.b,f); },COL.ink);
-  plotPts(ctx,ax,st3.pts,COL.r[1],'phi');
-  var p=phiNow();
-  cursor(ctx,ax,sim.f,p===null?null:clamp(p,0,180),COL.r[1]);
-  if(!st3.pts.length) emptyText(ctx,ax,'Stelle f_E ein, warte und tippe „Phase speichern“');
-}
 function drawChartMass(){
   var C=charts.chartMass; if(!C.ctx) return;
   var ctx=C.ctx, ax=axes(ctx,C.w,C.h,Object.assign({},RES_AX,{ymax:5,ystep:1}));
@@ -897,7 +848,7 @@ function drawChartAmpT(){
 }
 function drawCharts(){
   if(stage===2) drawChartRes();
-  else if(stage===3){ drawChartYT(); if($('chkPhase3').checked) drawChartPhase(); }
+  else if(stage===3){ drawChartYT(); }
   else if(stage===4){ if(st4.tab==='mass') drawChartMass(); else if(st4.tab==='nod') drawChartAmpT(); }
 }
  
@@ -913,11 +864,11 @@ function setStage(k){
     configure([st1.m],0.4,'hand');
     $('stageHint').textContent='Ziehe mit dem Finger oder der Maus irgendwo im Feld nach oben und unten. Feder: D = 20 N/m.';
   } else if(k===2){
-    configure(MASSES,st2.b,'motor'); sim.f=st2.f; setSpeed(sim.speed>4?1:sim.speed);
+    configure(MASSES,st2.b,'motor'); sim.f=st2.f;
     update2(); advance(10);
     $('stageHint').textContent='Alle Federn haben D = 20 N/m. Tippe auf ein Pendel, um es auszuwählen.';
   } else if(k===3){
-    configure([0.5],st3.b,'motor'); sim.f=st3.f; syncF('f3',sim.f); advance(10);
+    configure([0.5],st3.b,'motor'); sim.f=st3.f; syncF3(); advance(10); setSpeed(1);
     $('stageHint').textContent='Feder D = 20 N/m, Masse 0,50 kg. Vergleiche die Bewegung von Aufhängung und Pendel.';
   } else {
     setTab4(st4.tab,true);
@@ -931,22 +882,16 @@ function setTab4(t,silent){
   st4.tab=t;
   qa('[data-tab4]').forEach(function(b){ b.setAttribute('aria-pressed',b.dataset.tab4===t?'true':'false'); });
   qa('[data-sub4]').forEach(function(el){ el.hidden=el.dataset.sub4!==t; });
-  $('chartCard4').hidden=(t==='bridge');
   $('c4massChart').hidden=(t!=='mass'); $('c4nodChart').hidden=(t!=='nod');
-  $('f4box').hidden=(t==='bridge'); $('b4box').hidden=(t!=='bridge');
-  $('massCheck4').hidden=(t!=='mass'); $('bridgeCheck4').hidden=(t!=='bridge');
+  $('massCheck4').hidden=(t!=='mass');
   if(t==='mass'){
     configure([st4.mass],0.5,'motor'); sim.f=st4.fm; syncF('f4',sim.f);
     $('stageHint').textContent='Feder D = 20 N/m, Masse unbekannt, Dämpfung 0,5 N·s/m.';
-  } else if(t==='bridge'){
-    configure([0.5],st4.bb,'motor'); sim.f=f0of(0.5);
-    $('stageHint').textContent='Modell einer Fußgängerbrücke: angeregt genau mit ihrer Eigenfrequenz.';
   } else {
     configure([0.5],0,'motor'); sim.A=0.1; sim.f=st4.fn; syncF('f4',sim.f);
     $('stageHint').textContent='Feder D = 20 N/m, Masse 0,50 kg, keine Dämpfung (f₀ ≈ 1,01 Hz).';
   }
-  $('fbB4').textContent=''; $('fbM4').textContent='';
-  updateCount4();
+  $('fbM4').textContent='';
   if(!silent) requestAnimationFrame(resize);
 }
  
@@ -998,27 +943,10 @@ function update1(){
 }
  
 /* ---------- Stufe 2 ---------- */
-function activeList(){ var r=[]; for(var i=0;i<5;i++) if(st2.active[i]) r.push(i); return r; }
-function missingPreds(){ return activeList().filter(function(i){ return st2.preds[i]===null; }); }
+function activeList(){ return [0,1]; }
 function calcYmax2(){
   var mx=0; activeList().forEach(function(i){ mx=Math.max(mx,thPeak(MASSES[i],st2.b,sim.A)); });
   st2.ymax=niceCeil(mx*1.1);
-}
-function buildToggles2(){
-  var box=$('toggles2'); box.innerHTML='';
-  MASSES.forEach(function(m,i){
-    var b=document.createElement('button'); b.type='button'; b.className='btn chip';
-    b.setAttribute('aria-pressed',st2.active[i]?'true':'false');
-    b.innerHTML='<span class="dot" style="background:var(--r'+(i+1)+')"></span>R'+(i+1);
-    b.title=fmt(m,2)+' kg';
-    b.addEventListener('click',function(){
-      if(st2.active[i] && activeList().length===1) return;
-      st2.active[i]=!st2.active[i];
-      if(!st2.active[st2.sel]) st2.sel=activeList()[0];
-      update2();
-    });
-    box.appendChild(b);
-  });
 }
 function buildChips2(){
   var box=$('chips2'); box.innerHTML='';
@@ -1031,10 +959,11 @@ function buildChips2(){
   });
 }
 function update2(){
-  calcYmax2(); buildToggles2(); buildChips2(); syncF('f2',sim.f);
-  var miss=missingPreds(), btn=$('btnSweep2');
+  calcYmax2(); buildChips2(); syncF('f2',sim.f);
+  qa('[data-pred2]').forEach(function(b){ b.setAttribute('aria-pressed',b.dataset.pred2===st2.pred?'true':'false'); b.disabled=st2.swept; });
+  var btn=$('btnSweep2');
   if(st2.sw){ btn.textContent='Durchlauf stoppen'; btn.disabled=false; }
-  else if(!st2.swept && miss.length){ btn.textContent='Erst Vorhersage setzen ('+miss.map(function(i){ return 'R'+(i+1); }).join(', ')+')'; btn.disabled=true; }
+  else if(!st2.swept && st2.pred===null){ btn.textContent='Erst Vorhersage auswählen (Auftrag 1)'; btn.disabled=true; }
   else { btn.textContent='Frequenzdurchlauf starten'; btn.disabled=false; }
   var u=st2.unlocked;
   $('lock2').hidden=u; $('formula2').hidden=!u; $('chkF02').disabled=!u; $('chkTh2').disabled=!u; $('btnUnlock2').hidden=u;
@@ -1044,39 +973,40 @@ function update2(){
   buildTable2();
 }
 function unlock2(){ st2.unlocked=true; update2(); }
-$('f2').addEventListener('input',function(){ st2.sw=null; st2.f=setFreq(+this.value); update2(); });
-qa('[data-step2]').forEach(function(b){ b.addEventListener('click',function(){ st2.sw=null; st2.f=setFreq(sim.f+(+b.dataset.step2)); update2(); }); });
+qa('[data-pred2]').forEach(function(b){ b.addEventListener('click',function(){
+  if(st2.swept) return;
+  st2.pred=b.dataset.pred2; update2();
+  say('msg2','Vorhersage gespeichert. Jetzt kannst du den Frequenzdurchlauf starten.');
+}); });
+function stopSweep(){ if(st2.sw){ st2.sw=null; update2(); } }
+$('f2').addEventListener('input',function(){ stopSweep(); st2.f=setFreq(+this.value); update2(); });
+qa('[data-step2]').forEach(function(b){ b.addEventListener('click',function(){ stopSweep(); st2.f=setFreq(sim.f+(+b.dataset.step2)); update2(); }); });
 $('b2').addEventListener('input',function(){
   st2.b=+this.value; setDamp(st2.b); $('b2out').textContent=fmt(st2.b,1)+' N·s/m';
   var had=st2.pts.some(function(a){ return a.length; });
-  st2.pts=[[],[],[],[],[]]; st2.sw=null; update2();
+  st2.pts=[[],[]]; st2.sw=null; update2();
   if(had) say('msg2','Messpunkte gelöscht, weil sich die Dämpfung geändert hat. Miss neu und vergleiche.');
-});
-$('chartRes').addEventListener('pointerdown',function(e){
-  var C=charts.chartRes; if(!C.ax) return;
-  var r=this.getBoundingClientRect(), x=e.clientX-r.left;
-  var f=F_MIN+(x-C.ax.L)/C.ax.pw*(F_MAX-F_MIN);
-  if(f<F_MIN-0.05 || f>F_MAX+0.05) return;
-  if(st2.swept){ say('msg2','Deine Vorhersage ist nach dem Durchlauf fest. Vergleiche sie mit der Messung.'); return; }
-  st2.preds[st2.sel]=Math.round(clamp(f,F_MIN,F_MAX)*20)/20;
-  say('msg2','Vorhersage für R'+(st2.sel+1)+': '+fmt(st2.preds[st2.sel],2)+' Hz');
-  var miss=missingPreds();
-  if(miss.length){ st2.sel=miss[0]; }
-  update2();
 });
 $('btnSave2').addEventListener('click',function(){
   var a=amp(st2.sel), f=Math.round(sim.f*100)/100; recPt(st2.pts[st2.sel],f,{a:a});
   say('msg2','Punkt gespeichert: R'+(st2.sel+1)+', f = '+fmt(f,2)+' Hz, A = '+fmt(a,1)+' cm'+(isSteady(st2.sel)?'':' (Achtung: noch nicht eingeschwungen)'));
   buildTable2();
 });
-$('btnClear2').addEventListener('click',function(){ st2.pts=[[],[],[],[],[]]; $('eval2').hidden=true; buildTable2(); say('msg2','Alle Messpunkte gelöscht.'); });
+$('btnClear2').addEventListener('click',function(){ st2.pts=[[],[]]; $('eval2').hidden=true; buildTable2(); say('msg2','Alle Messpunkte gelöscht.'); });
+function sweepFreqs(){
+  var fs={}, f, k;
+  for(f=F_MIN;f<=F_MAX+1e-9;f+=0.1) fs[f.toFixed(2)]=1;
+  MASSES.forEach(function(m){ fs[f0of(m).toFixed(2)]=1; var c=Math.round(f0of(m)*20)/20; for(k=-4;k<=4;k++){ var g=c+k*0.05; if(g>=F_MIN-1e-9 && g<=F_MAX+1e-9) fs[g.toFixed(2)]=1; } });
+  return Object.keys(fs).map(Number).sort(function(a,b){ return a-b; });
+}
 $('btnSweep2').addEventListener('click',function(){
-  if(st2.sw){ st2.sw=null; update2(); say('msg2','Durchlauf gestoppt.'); return; }
-  var freqs=[]; for(var f=F_MIN;f<=F_MAX+1e-9;f+=0.05) freqs.push(Math.round(f*100)/100);
-  activeList().forEach(function(i){ st2.pts[i]=[]; });
-  $('eval2').hidden=true; resetOsc(); sim.running=true; syncRun();
-  st2.sw={idx:0,freqs:freqs,next:0};
-  update2(); say('msg2','Durchlauf läuft …',4000);
+  if(st2.sw){ stopSweep(); say('msg2','Durchlauf gestoppt.'); return; }
+  var freqs=sweepFreqs();
+  st2.pts=[[],[]]; $('eval2').hidden=true;
+  resetOsc(); sim.f=freqs[0]; st2.f=sim.f; sim.changeT=sim.t; sim.running=true; syncRun();
+  if(sim.speed<4) setSpeed(4);
+  st2.sw={idx:0,freqs:freqs,stepT:sim.t,lastChk:sim.t,prev:[0,0]};
+  update2(); say('msg2','Durchlauf läuft. Beobachte, wie die Pendel bei jeder Frequenz einschwingen.',6000);
 });
 $('btnUnlock2').addEventListener('click',unlock2);
 function recPt(arr,f,obj){
@@ -1084,24 +1014,34 @@ function recPt(arr,f,obj){
   for(var k=0;k<arr.length;k++){ if(Math.abs(arr[k].f-f)<0.004){ arr[k]=obj; return; } }
   arr.push(obj); arr.sort(function(p,q){ return p.f-q.f; });
 }
-function sweepTick(now){
-  var sw=st2.sw; if(now<sw.next) return;
-  if(sw.idx>=sw.freqs.length){ finishSweep(); return; }
-  sim.f=sw.freqs[sw.idx]; st2.f=sim.f; syncF('f2',sim.f);
-  var act=activeList(), mmax=0; act.forEach(function(i){ mmax=Math.max(mmax,MASSES[i]); });
-  advance(clamp(6*2*mmax/sim.b,8,40));
-  act.forEach(function(i){ recPt(st2.pts[i],sim.f,{a:amp(i)}); });
-  sw.idx++; sw.next=now+380;
+function sweepTick(){
+  /* Pro Erregerperiode prüfen, ob die Amplituden stabil sind; dann messen und zur nächsten Frequenz. */
+  var sw=st2.sw, per=1/sim.f;
+  if(sim.t-sw.lastChk<per) return;
+  sw.lastChk=sim.t;
+  var cur=[amp(0,1.05*per),amp(1,1.05*per)];
+  var stable=cur.every(function(a,i){ return Math.abs(a-sw.prev[i])<Math.max(0.006*a,0.004); });
+  sw.prev=cur;
+  var dur=sim.t-sw.stepT;
+  if((dur>=4*per+1 && stable) || dur>25){
+    recPt(st2.pts[0],sim.f,{a:cur[0]}); recPt(st2.pts[1],sim.f,{a:cur[1]});
+    sw.idx++;
+    if(sw.idx>=sw.freqs.length){ finishSweep(); return; }
+    sim.f=sw.freqs[sw.idx]; st2.f=sim.f; syncF('f2',sim.f); sw.stepT=sim.t; sim.changeT=sim.t;
+  }
 }
 function finishSweep(){
   st2.sw=null; var first=!st2.swept; st2.swept=true; st2.unlocked=true;
+  var pk=[0,1].map(function(i){ return st2.pts[i].reduce(function(a,b){ return b.a>a.a?b:a; }); });
+  var lower=pk[0].f<pk[1].f?'R1':(pk[1].f<pk[0].f?'R2':'gleich');
   var html='<p><b>Vergleich mit deiner Vorhersage</b></p>';
-  activeList().forEach(function(i){
-    var pts=st2.pts[i]; if(!pts.length) return;
-    var pk=pts.reduce(function(a,b){ return b.a>a.a?b:a; });
-    html+='<p><span class="dot" style="background:var(--r'+(i+1)+')"></span> R'+(i+1)+': Vorhersage '+
-      (st2.preds[i]===null?'–':fmt(st2.preds[i],2)+' Hz')+' · Maximum gemessen bei <b>'+fmt(pk.f,2)+' Hz</b></p>';
+  [0,1].forEach(function(i){
+    html+='<p><span class="dot" style="background:var(--r'+(i+1)+')"></span> R'+(i+1)+' ('+fmt(MASSES[i],2)+' kg): Maximum bei <b>'+fmt(pk[i].f,2)+' Hz</b></p>';
   });
+  if(st2.pred){
+    var predTxt=st2.pred==='gleich'?'beide gleich':st2.pred;
+    html+='<p>Deine Vorhersage: <b>'+predTxt+'</b>. '+(st2.pred===lower?'Das stimmt!':'Das stimmt nicht: Das Maximum von '+lower+' liegt bei der kleineren Frequenz.')+' Erkläre den Unterschied mit der Masse.</p>';
+  }
   if(first) html+='<p>Neu freigeschaltet: Formel, Eigenfrequenzen und Theoriekurven (im Bedienfeld unter „Lösungshilfen“).</p>';
   $('eval2').innerHTML=html; $('eval2').hidden=false;
   update2(); say('msg2','Durchlauf fertig.');
@@ -1131,27 +1071,34 @@ $('btnCopy2').addEventListener('click',function(){
 });
  
 /* ---------- Stufe 3 ---------- */
-$('f3').addEventListener('input',function(){ st3.f=setFreq(+this.value); syncF('f3',sim.f); });
-qa('[data-step3]').forEach(function(b){ b.addEventListener('click',function(){ st3.f=setFreq(sim.f+(+b.dataset.step3)); syncF('f3',sim.f); }); });
-$('b3').addEventListener('input',function(){
-  st3.b=+this.value; setDamp(st3.b); $('b3out').textContent=fmt(st3.b,1)+' N·s/m';
-  if(st3.pts.length){ st3.pts=[]; say('msg3','Phasenpunkte gelöscht, weil sich die Dämpfung geändert hat.'); }
-});
+var F0_3=f0of(0.5);
+function syncF3(){
+  var at=Math.abs(sim.f-F0_3)<1e-6;
+  $('f3').value=sim.f; $('f3out').textContent=at?'f₀ = '+fmt(sim.f,2)+' Hz':fmt(sim.f,2)+' Hz';
+}
+function setF3(f){
+  /* rastet in der Nähe der Eigenfrequenz genau auf f0 ein */
+  if(Math.abs(f-F0_3)<0.012){ sim.f=F0_3; sim.changeT=sim.t; } else setFreq(f);
+  st3.f=sim.f; syncF3();
+}
+$('f3').addEventListener('input',function(){ setF3(+this.value); });
+qa('[data-step3]').forEach(function(b){ b.addEventListener('click',function(){
+  var base=Math.abs(sim.f-F0_3)<1e-6?Math.round(sim.f*100)/100:sim.f;
+  setF3(base+(+b.dataset.step3));
+}); });
+$('btnF03').addEventListener('click',function(){ sim.f=F0_3; sim.changeT=sim.t; st3.f=sim.f; syncF3(); });
 $('chkReal3').addEventListener('change',function(){
   $('ytHint').textContent=this.checked?'Echte Größen: Die Aufhängung bewegt sich nur um 0,5 cm.':'Beide Kurven sind auf die gleiche Höhe gestreckt, damit du den zeitlichen Versatz gut siehst.';
 });
-$('chkPhase3').addEventListener('change',function(){ $('phaseBox3').hidden=!this.checked; requestAnimationFrame(resize); });
-$('btnSave3').addEventListener('click',function(){
-  var p=phiNow();
-  if(p===null || !isSteady(0)){ say('msg3','Warte, bis das Pendel eingeschwungen ist.'); return; }
-  var f=Math.round(sim.f*100)/100; recPt(st3.pts,f,{phi:clamp(p,0,180)});
-  say('msg3','Gespeichert: f = '+fmt(f,2)+' Hz, Δφ = '+fmt(clamp(p,0,180),0)+'°');
-});
-$('btnClear3').addEventListener('click',function(){ st3.pts=[]; say('msg3','Phasenpunkte gelöscht.'); });
+$('chkPhase3').addEventListener('change',function(){ $('phaseBox3').hidden=!this.checked; });
 function update3(){
   if(!$('chkPhase3').checked) return;
   var p=phiNow(), s=isSteady(0);
-  $('phiOut3').textContent=(p===null)?'–':fmt(clamp(p,0,180),0)+'° ≈ '+fmt(clamp(p,0,180)/360,2)+' T';
+  if(p===null){ $('phiOut3').textContent='–'; }
+  else {
+    var r=Math.round(clamp(p,0,180)/5)*5;
+    $('phiOut3').textContent=fmt(r,0)+'° ≈ '+fmt(r/360,2)+' T';
+  }
   var el=$('steady3'); el.textContent=s?'eingeschwungen ✓':'schwingt noch ein …'; el.style.color=s?'var(--good)':'var(--muted)';
 }
  
@@ -1161,20 +1108,18 @@ $('f4').addEventListener('input',function(){ var f=setFreq(+this.value); syncF('
 qa('[data-step4]').forEach(function(b){ b.addEventListener('click',function(){
   var f=setFreq(sim.f+(+b.dataset.step4)); syncF('f4',f); if(st4.tab==='mass') st4.fm=f; else st4.fn=f;
 }); });
-$('b4').addEventListener('input',function(){ st4.bb=+this.value; setDamp(st4.bb); $('b4out').textContent=fmt(st4.bb,2)+' N·s/m'; $('fbB4').textContent=''; });
-function updateCount4(){ $('count4').textContent=st4.msaves+(st4.msaves===1?' Messpunkt':' Messpunkte'); }
 $('btnSave4').addEventListener('click',function(){
-  var a=amp(0), f=Math.round(sim.f*100)/100; recPt(st4.mpts,f,{a:a}); st4.msaves++; updateCount4();
+  var a=amp(0), f=Math.round(sim.f*100)/100; recPt(st4.mpts,f,{a:a});
   say('msg4','Punkt gespeichert: f = '+fmt(f,2)+' Hz, A = '+fmt(a,2)+' cm'+(isSteady(0)?'':' (noch nicht eingeschwungen)'));
 });
+$('btnClear4').addEventListener('click',function(){ st4.mpts=[]; say('msg4','Messpunkte gelöscht.'); });
 function fb(id,t,ok){ var el=$(id); el.textContent=t; el.className='feedback'+(ok===true?' ok':ok===false?' bad':''); }
 $('btnCheckM4').addEventListener('click',function(){
   var v=parseFloat(String($('mIn4').value).replace(',','.'));
   if(!(v>0)){ fb('fbM4','Bitte eine Masse in kg eingeben, z. B. 0,45.'); return; }
   var dev=(v-st4.mass)/st4.mass;
   if(Math.abs(dev)<=0.05){
-    st4.solved=true;
-    fb('fbM4','Treffer! Die Masse ist '+fmt(st4.mass,2)+' kg (Abweichung '+fmt(Math.abs(dev)*100,1)+' %). Du hast '+st4.msaves+' Messpunkte gebraucht. Schaffst du es mit weniger?',true);
+    fb('fbM4','Treffer! Die Masse ist '+fmt(st4.mass,2)+' kg (Abweichung '+fmt(Math.abs(dev)*100,1)+' %). Probier es mit „Neue Masse“ noch einmal.',true);
   } else {
     fb('fbM4','Noch nicht: Dein Wert ist zu '+(dev>0?'groß':'klein')+' (mehr als 5 % daneben). Prüfe Maximum und Rechnung.',false);
   }
@@ -1182,31 +1127,17 @@ $('btnCheckM4').addEventListener('click',function(){
 $('btnNewM4').addEventListener('click',function(){
   newMass(); $('mIn4').value=''; setTab4('mass'); say('msg4','Neues Pendel mit unbekannter Masse.');
 });
-$('btnCheckB4').addEventListener('click',function(){
-  var a=amp(0);
-  if(!isSteady(0)){ fb('fbB4','Die Brücke schwingt noch ein. Warte, bis sich die Amplitude nicht mehr ändert.'); return; }
-  if(a>=3) fb('fbB4','Zu wenig Dämpfung: '+fmt(a,1)+' cm. Die Brücke schwingt zu stark.',false);
-  else if(sim.b<=0.65) fb('fbB4','Perfekt: '+fmt(a,1)+' cm bei b = '+fmt(sim.b,2)+' N·s/m. Sicher und sparsam!',true);
-  else fb('fbB4','Sicher ('+fmt(a,1)+' cm), aber teuer. Es geht auch mit weniger Dämpfung.',false);
-});
-function update4(){
-  if(st4.tab!=='bridge') return;
-  var s=isSteady(0), a=amp(0);
-  $('ampB4').textContent=fmt(a,1)+' cm';
-  var el=$('steadyB4'); el.textContent=s?'eingeschwungen ✓':'schwingt noch ein …'; el.style.color=s?'var(--good)':'var(--muted)';
-}
- 
 /* ================= Schleife ================= */
 var last=0, tick=0;
 function frame(now){
   var dtR=Math.min(0.05,Math.max(0,(now-last)/1000)); last=now;
   if(stage===1){ if(!drag) sim.hT*=Math.exp(-dtR/0.4); advance(dtR||0.001); }
   else if(sim.running && dtR>0) advance(dtR*sim.speed);
-  if(stage===2 && st2.sw) sweepTick(now);
+  if(stage===2 && st2.sw && sim.running) sweepTick();
   tick++;
   if(tick%30===0) readColors();
   drawStage(); drawCharts();
-  if(tick%6===0){ if(stage===1) update1(); else if(stage===3) update3(); else if(stage===4) update4(); }
+  if(tick%6===0){ if(stage===1) update1(); else if(stage===3) update3(); }
   requestAnimationFrame(frame);
 }
  
