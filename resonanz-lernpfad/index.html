@@ -1,0 +1,1223 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Resonanz-Lernpfad</title>
+<style>
+/* Lernpfad in vier Stufen: links Versuch und Diagramme, rechts Auftrag und Bedienfeld. */
+:root{
+  --bg:#f4f6f3; --surface:#ffffff; --stage:#eef2ef; --ink:#14202b; --muted:#566370; --line:#d5dbd7; --grid:#e3e8e4;
+  --accent:#1d5ca6; --accent-ink:#ffffff; --good:#2f8052; --bad:#b83a52; --q:#6b7580;
+  --r1:#2a62ad; --r2:#bf6410; --r3:#2f8052; --r4:#8a4fa0; --r5:#b83a52; --on-r:#ffffff;
+  --font-body:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
+  --font-mono:ui-monospace,SFMono-Regular,Menlo,Consolas,'Liberation Mono',monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#0f161d; --surface:#17212b; --stage:#121b24; --ink:#e8eef3; --muted:#9aa7b3; --line:#2b3844; --grid:#212d38;
+    --accent:#6aa6e8; --accent-ink:#0b1320; --good:#62c58d; --bad:#f27c93; --q:#8d98a3;
+    --r1:#6aa8ea; --r2:#f2a24f; --r3:#62c58d; --r4:#c795e3; --r5:#f27c93; --on-r:#0e1620;
+    color-scheme:dark;
+  }
+}
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--bg); color:var(--ink); font-family:var(--font-body); font-size:15px; line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px)); padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-block:20px 32px;
+}
+.wrap{max-width:1240px;margin:0 auto}
+header{margin-bottom:14px}
+h1{font-size:clamp(1.6rem,1.2rem + 1.6vw,2.2rem);margin:0 0 4px;font-weight:600;letter-spacing:-0.01em}
+.lede{margin:0;color:var(--muted);max-width:75ch}
+h2{font-size:1.05rem;margin:0 0 8px;font-weight:600}
+h3{font-size:.95rem;margin:14px 0 6px;font-weight:600}
+.back{margin:0 0 8px;font-size:14px}
+.back a{color:var(--accent);text-decoration:none;font-weight:500}
+.back a:hover{text-decoration:underline}
+ 
+.steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:0 0 16px}
+@media (max-width:700px){.steps{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.step{min-height:58px;text-align:left;padding:8px 12px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;cursor:pointer;display:flex;gap:10px;align-items:center}
+.step .num{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--stage);font-weight:700;flex:none;border:1px solid var(--line)}
+.step b{display:block;font-weight:600;line-height:1.25}
+.step small{display:block;color:var(--muted);font-size:12px;line-height:1.3}
+.step[aria-current="step"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.step[aria-current="step"] .num{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+ 
+.layout{display:grid;gap:16px;grid-template-columns:minmax(0,1fr)}
+.main-col,.side{display:grid;gap:16px;align-content:start;min-width:0}
+@media (min-width:980px){ .layout{grid-template-columns:minmax(0,1.55fr) minmax(320px,1fr)} }
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;min-width:0}
+canvas{display:block;width:100%;border-radius:8px;touch-action:manipulation}
+#stage{height:470px;background:var(--stage)}
+#stage.hand{touch-action:none;cursor:grab}
+#stage.hand:active{cursor:grabbing}
+.chart{height:290px;background:var(--surface)}
+#chartYT{height:220px}
+.hint{margin:0 0 10px;color:var(--muted);font-size:13px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.btn{min-height:44px;padding:0 14px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-weight:500;cursor:pointer}
+.btn:hover{border-color:var(--muted)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent);font-weight:600}
+.btn.small{padding:0 10px;font-family:var(--font-mono);font-size:13px;min-width:56px}
+.linkbtn{background:none;border:0;padding:4px 0;color:var(--muted);font:inherit;font-size:12px;text-decoration:underline;cursor:pointer}
+button:focus-visible,input:focus-visible,textarea:focus-visible,summary:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.field{display:grid;gap:6px;margin-top:16px}
+.fieldhead{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.fieldhead label,.fieldhead .lbl{font-weight:500}
+.val{font-family:var(--font-mono);font-variant-numeric:tabular-nums;font-size:1.3rem;font-weight:600}
+input[type=range]{width:100%;height:32px;margin:0;accent-color:var(--accent)}
+.scale{display:flex;justify-content:space-between;color:var(--muted);font-size:12px}
+.check{display:flex;align-items:center;gap:10px;min-height:44px}
+.check input{width:22px;height:22px;margin:0;accent-color:var(--accent);flex:none}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg .btn{flex:1}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.chip{display:inline-flex;align-items:center;gap:8px}
+.dot{width:10px;height:10px;border-radius:50%;flex:none;display:inline-block}
+.note{margin:10px 0 0;color:var(--muted);font-size:13px}
+.msg{margin:8px 0 0;min-height:1.4em;font-size:14px;color:var(--accent);font-weight:500}
+.formula{margin:10px 0 0;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--stage);font-family:var(--font-mono);font-size:14px;font-weight:500;display:flex;flex-wrap:wrap;gap:4px 20px}
+.formula small{display:block;width:100%;font-family:var(--font-body);font-size:12px;font-weight:400;color:var(--muted)}
+input:disabled{opacity:.45}
+sub{font-size:.75em}
+ 
+.task ol{padding-left:1.35em;margin:8px 0 0}
+.task li{margin:0 0 10px}
+.task li.locked{color:var(--muted)}
+.task p{margin:0 0 6px}
+details.tip{border:1px solid var(--line);border-radius:8px;padding:4px 12px;margin-top:8px;background:var(--stage)}
+details.tip summary{cursor:pointer;font-weight:600;min-height:36px;display:flex;align-items:center}
+details.tip p{margin:4px 0 8px}
+textarea{width:100%;min-height:64px;font:inherit;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);margin-top:6px;resize:vertical}
+.text-in{min-height:44px;font:inherit;font-family:var(--font-mono);padding:0 10px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);width:120px}
+.readouts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.readout{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--stage)}
+.readout span{display:block;color:var(--muted);font-size:12px}
+.readout output{font-family:var(--font-mono);font-variant-numeric:tabular-nums;font-size:1.6rem;font-weight:600}
+.evalbox{margin-top:12px;padding:12px;border-radius:10px;border:1px solid var(--accent);background:var(--stage)}
+.evalbox p{margin:0 0 6px}
+.evalbox p:last-child{margin:0}
+.lockhint{color:var(--muted);font-size:13px;margin:6px 0 0}
+.status{font-size:13px;color:var(--muted)}
+.status.ok{color:var(--good);font-weight:600}
+.feedback{margin-top:8px;font-weight:500;min-height:1.4em}
+.feedback.ok{color:var(--good)} .feedback.bad{color:var(--bad)}
+table.data{border-collapse:collapse;font-family:var(--font-mono);font-size:13px;width:100%;margin-top:8px}
+table.data th,table.data td{border-bottom:1px solid var(--line);padding:4px 8px;text-align:right}
+table.data th{font-family:var(--font-body);font-weight:600}
+.subtabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:4px}
+.subtabs .btn{flex:1}
+[hidden]{display:none !important}
+footer{margin-top:18px;color:var(--muted);font-size:12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <p class="back"><a href="../">← Alle Simulationen</a></p>
+  <h1>Resonanz-Lernpfad</h1>
+  <p class="lede">Federpendel, deren Aufhängung auf und ab bewegt wird. Arbeite die vier Stufen der Reihe nach durch: erst selbst ausprobieren, dann vorhersagen und messen, dann erklären.</p>
+</header>
+ 
+<nav class="steps" aria-label="Stufen">
+  <button class="step" type="button" data-stage="1"><span class="num">1</span><span><b>Selbst anregen</b><small>Du bist der Antrieb</small></span></button>
+  <button class="step" type="button" data-stage="2"><span class="num">2</span><span><b>Vorhersagen &amp; messen</b><small>Resonanzkurven</small></span></button>
+  <button class="step" type="button" data-stage="3"><span class="num">3</span><span><b>Warum gerade bei f<sub>0</sub>?</b><small>Phase und Energie</small></span></button>
+  <button class="step" type="button" data-stage="4"><span class="num">4</span><span><b>Challenges</b><small>Wissen anwenden</small></span></button>
+</nav>
+ 
+<main class="layout">
+  <div class="main-col">
+    <section class="card" aria-labelledby="h-stage">
+      <h2 id="h-stage">Versuch</h2>
+      <p class="hint" id="stageHint">Alle Federn haben D = 20 N/m.</p>
+      <canvas id="stage" role="img" aria-label="Federpendel an einer Aufhängung, die auf und ab bewegt wird. Unter jedem Pendel zeigt ein Balken die Amplitude."></canvas>
+    </section>
+ 
+    <!-- Stufe 2: Resonanzkurve -->
+    <section class="card" data-panel="2" aria-labelledby="h-res">
+      <h2 id="h-res">Resonanzkurve</h2>
+      <p class="hint">Wähle ein Pendel und tippe ins Diagramm, um deine Vorhersage zu setzen.</p>
+      <div class="chips" role="group" aria-label="Pendel wählen" id="chips2"></div>
+      <canvas id="chartRes" class="chart" role="img" aria-label="Amplitude in Abhängigkeit von der Erregerfrequenz mit Vorhersagen und Messpunkten"></canvas>
+      <div class="row" style="margin-top:12px">
+        <button class="btn primary" id="btnSave2" type="button">Messpunkt speichern</button>
+        <button class="btn" id="btnClear2" type="button">Punkte löschen</button>
+      </div>
+      <p class="msg" id="msg2" role="status"></p>
+      <div class="evalbox" id="eval2" hidden></div>
+      <details class="tip" id="tableBox2">
+        <summary>Messwerte als Tabelle</summary>
+        <div id="table2"></div>
+        <div class="row" style="margin:8px 0"><button class="btn" id="btnCopy2" type="button">Tabelle kopieren</button></div>
+      </details>
+    </section>
+ 
+    <!-- Stufe 3: y-t-Diagramm und Phase -->
+    <section class="card" data-panel="3" aria-labelledby="h-yt">
+      <h2 id="h-yt">Aufhängung und Pendel im y-t-Diagramm</h2>
+      <p class="hint" id="ytHint">Beide Kurven sind auf die gleiche Höhe gestreckt, damit du den zeitlichen Versatz gut siehst.</p>
+      <canvas id="chartYT" class="chart" role="img" aria-label="Auslenkung von Aufhängung und Pendel über der Zeit"></canvas>
+      <label class="check"><input type="checkbox" id="chkReal3"> Echte Größen anzeigen (nicht gestreckt)</label>
+      <div id="phaseBox3" hidden>
+        <h3>Phasenverschiebung Δφ in Abhängigkeit von f<sub>E</sub></h3>
+        <div class="readouts" style="margin-top:4px">
+          <div class="readout"><span>Pendel hinkt hinterher um</span><output id="phiOut3">–</output></div>
+          <div class="readout"><span>Zustand</span><output id="steady3" style="font-size:1rem;font-family:var(--font-body)">–</output></div>
+        </div>
+        <canvas id="chartPhase" class="chart" style="margin-top:12px" role="img" aria-label="Phasenverschiebung in Abhängigkeit von der Erregerfrequenz"></canvas>
+        <div class="row" style="margin-top:12px">
+          <button class="btn primary" id="btnSave3" type="button">Phase speichern</button>
+          <button class="btn" id="btnClear3" type="button">Punkte löschen</button>
+        </div>
+        <label class="check"><input type="checkbox" id="chkTheory3"> Theoriekurve einblenden</label>
+      </div>
+      <p class="msg" id="msg3" role="status"></p>
+    </section>
+ 
+    <!-- Stufe 4: Diagramme der Challenges -->
+    <section class="card" data-panel="4" id="chartCard4" aria-labelledby="h-c4">
+      <h2 id="h-c4">Messung</h2>
+      <div id="c4massChart">
+        <p class="hint">Amplitude des grauen Pendels. Jeder gespeicherte Punkt zählt.</p>
+        <canvas id="chartMass" class="chart" role="img" aria-label="Gespeicherte Messpunkte des unbekannten Pendels"></canvas>
+        <div class="row" style="margin-top:12px">
+          <button class="btn primary" id="btnSave4" type="button">Messpunkt speichern</button>
+          <span class="status" id="count4">0 Messpunkte</span>
+        </div>
+      </div>
+      <div id="c4nodChart">
+        <p class="hint">Amplitude des Pendels in den letzten 60 Sekunden.</p>
+        <canvas id="chartAmpT" class="chart" role="img" aria-label="Amplitude über der Zeit"></canvas>
+      </div>
+      <p class="msg" id="msg4" role="status"></p>
+    </section>
+  </div>
+ 
+  <div class="side">
+    <!-- ================= Stufe 1 ================= -->
+    <section class="card task" data-panel="1" aria-labelledby="h-t1">
+      <h2 id="h-t1">Auftrag 1 · Selbst anregen</h2>
+      <p>Diesmal gibt es keinen Motor: <b>Du</b> bewegst die Aufhängung mit dem Finger auf und ab.</p>
+      <ol>
+        <li>Zieh im Versuchsfeld nach oben und unten. Schaffst du es, das Pendel auf <b>mehr als 8 cm</b> Amplitude zu bringen?</li>
+        <li>Probiere drei Varianten: sehr langsam, sehr schnell und „genau richtig“. Beschreibe jeweils in einem Satz, wie das Pendel reagiert.</li>
+        <li>Wechsle zum schweren und zum leichten Pendel. Wie musst du deinen Takt ändern?</li>
+      </ol>
+      <details class="tip"><summary>Tipp 1</summary><p>Kleine Bewegungen reichen. Es kommt nicht auf die Kraft an, sondern auf den Rhythmus.</p></details>
+      <details class="tip"><summary>Tipp 2</summary><p>Gib dem Pendel einen kurzen Ruck und lass los. In welchem Rhythmus schwingt es von selbst? Bewege dich dann genau in diesem Rhythmus mit.</p></details>
+    </section>
+    <section class="card" data-panel="1" aria-labelledby="h-c1">
+      <h2 id="h-c1">Bedienfeld</h2>
+      <div class="readouts" style="margin-top:0">
+        <div class="readout"><span>Dein Takt</span><output id="takt1">–</output></div>
+        <div class="readout"><span>Amplitude des Pendels</span><output id="amp1">0,0 cm</output></div>
+      </div>
+      <div class="field">
+        <span class="lbl" style="font-weight:500">Pendel</span>
+        <div class="seg" role="group" aria-label="Pendel wählen">
+          <button class="btn" type="button" data-m1="0.2" aria-pressed="false">leicht · 0,20 kg</button>
+          <button class="btn" type="button" data-m1="0.5" aria-pressed="true">mittel · 0,50 kg</button>
+          <button class="btn" type="button" data-m1="0.8" aria-pressed="false">schwer · 0,80 kg</button>
+        </div>
+      </div>
+      <div class="field"><div class="row"><button class="btn" type="button" data-reset>Ruhe herstellen</button></div></div>
+      <p class="msg" id="msg1" role="status"></p>
+    </section>
+ 
+    <!-- ================= Stufe 2 ================= -->
+    <section class="card task" data-panel="2" aria-labelledby="h-t2">
+      <h2 id="h-t2">Auftrag 2 · Vorhersagen und messen</h2>
+      <p>Jetzt treibt ein Motor die Aufhängung mit der <b>Erregerfrequenz f<sub>E</sub></b> an. Zwei Pendel mit gleicher Feder hängen daran: R1 (0,80 kg) und R4 (0,20 kg).</p>
+      <ol>
+        <li><b>Vorhersage:</b> Bei welcher Erregerfrequenz schwingt R1 am stärksten, bei welcher R4? Wähle im Diagramm das Pendel aus und tippe auf die passende Stelle. Begründe kurz mit deinen Erfahrungen aus Stufe 1.
+          <textarea id="reason2" placeholder="Ich vermute … weil …" aria-label="Begründung der Vorhersage"></textarea></li>
+        <li><b>Messen:</b> Starte den Frequenzdurchlauf. Vergleiche die Messung mit deiner Vorhersage.</li>
+        <li class="lockable"><span class="lk">🔒 </span>Berechne die Eigenfrequenzen f<sub>0</sub> beider Pendel mit der Formel und vergleiche sie mit den gemessenen Maxima.</li>
+        <li class="lockable"><span class="lk">🔒 </span>Erhöhe die Dämpfung und miss erneut. Wie ändern sich Höhe, Breite und Lage der Resonanzkurve?</li>
+      </ol>
+      <details class="tip"><summary>Tipp zur Vorhersage</summary><p>Erinnere dich an Stufe 1: Musstest du beim schweren Pendel schneller oder langsamer ziehen als beim leichten?</p></details>
+      <details class="tip" id="terms2" hidden><summary>Fachbegriffe</summary>
+        <p><b>Eigenfrequenz f<sub>0</sub>:</b> Frequenz, mit der ein Pendel nach einem Anstoß von selbst schwingt.</p>
+        <p><b>Erregerfrequenz f<sub>E</sub>:</b> Frequenz, mit der der Antrieb das Pendel anregt.</p>
+        <p><b>Resonanz:</b> Stimmt f<sub>E</sub> mit f<sub>0</sub> (fast) überein, wird die Amplitude maximal.</p>
+      </details>
+    </section>
+    <section class="card" data-panel="2" aria-labelledby="h-c2">
+      <h2 id="h-c2">Bedienfeld</h2>
+      <div class="row">
+        <button class="btn primary" type="button" data-run>Pause</button>
+        <button class="btn" type="button" data-reset>Ruhe herstellen</button>
+      </div>
+      <div class="field">
+        <div class="fieldhead"><label for="f2">Erregerfrequenz f<sub>E</sub></label><output id="f2out" class="val" for="f2">1,00 Hz</output></div>
+        <input id="f2" type="range" min="0.4" max="2.8" step="0.01" value="1">
+        <div class="row">
+          <button class="btn small" type="button" data-step2="-0.1">−0,10</button>
+          <button class="btn small" type="button" data-step2="-0.01">−0,01</button>
+          <button class="btn small" type="button" data-step2="0.01">+0,01</button>
+          <button class="btn small" type="button" data-step2="0.1">+0,10</button>
+        </div>
+      </div>
+      <div class="field">
+        <div class="fieldhead"><label for="b2">Dämpfung b</label><output id="b2out" class="val" for="b2">0,5 N·s/m</output></div>
+        <input id="b2" type="range" min="0.3" max="1.5" step="0.1" value="0.5">
+        <div class="scale"><span>schwach</span><span>stark</span></div>
+      </div>
+      <div class="field">
+        <span class="lbl" style="font-weight:500">Tempo</span>
+        <div class="seg" role="group" aria-label="Simulationstempo">
+          <button class="btn" type="button" data-speed="1">1×</button>
+          <button class="btn" type="button" data-speed="2">2×</button>
+          <button class="btn" type="button" data-speed="4">4×</button>
+        </div>
+      </div>
+      <div class="field">
+        <span class="lbl" style="font-weight:500">Pendel anzeigen</span>
+        <div class="seg" role="group" aria-label="Pendel ein- und ausblenden" id="toggles2"></div>
+      </div>
+      <div class="field">
+        <button class="btn primary" id="btnSweep2" type="button">Frequenzdurchlauf</button>
+        <p class="note" style="margin:0">Im Zeitraffer: Bei jeder Frequenz wird gewartet, bis die Pendel eingeschwungen sind, dann wird gemessen. Dauer etwa 20 Sekunden.</p>
+      </div>
+      <div class="field" style="gap:0">
+        <h3 style="margin-top:0">Lösungshilfen</h3>
+        <p class="lockhint" id="lock2">🔒 Werden nach deinem ersten Frequenzdurchlauf freigeschaltet.</p>
+        <div class="formula" id="formula2" hidden><span>T = 2π·√(m/D)</span><span>f<sub>0</sub> = 1/T</span><small>m in kg, D in N/m, dann ist T in s und f<sub>0</sub> in Hz.</small></div>
+        <label class="check"><input type="checkbox" id="chkF02" disabled> Eigenfrequenzen anzeigen</label>
+        <label class="check"><input type="checkbox" id="chkTh2" disabled> Theoriekurven anzeigen</label>
+        <button class="linkbtn" id="btnUnlock2" type="button">Lehrkraft: ohne Durchlauf freischalten</button>
+      </div>
+    </section>
+ 
+    <!-- ================= Stufe 3 ================= -->
+    <section class="card task" data-panel="3" aria-labelledby="h-t3">
+      <h2 id="h-t3">Auftrag 3 · Warum gerade bei f<sub>0</sub>?</h2>
+      <p>Das Pendel hat m = 0,50 kg, also f<sub>0</sub> ≈ 1,01 Hz.</p>
+      <ol>
+        <li>Stelle das Tempo auf ½×. Beobachte bei f<sub>E</sub> = 0,5 Hz, 1,0 Hz und 2,0 Hz, wie sich Aufhängung und Pendel zueinander bewegen: <b>gleichzeitig, versetzt oder gegeneinander?</b> Die Pfeile und das y-t-Diagramm helfen dir.</li>
+        <li>Schalte „Phasenverschiebung messen“ ein. Speichere Δφ für mindestens sechs Frequenzen und beschreibe den Verlauf.</li>
+        <li>Schalte die Anzeige „Antrieb hilft / bremst“ ein. Erkläre damit, warum die Amplitude genau bei f<sub>E</sub> = f<sub>0</sub> am größten wird.</li>
+        <li>Wie verändert eine stärkere Dämpfung den Verlauf von Δφ?</li>
+      </ol>
+      <details class="tip"><summary>Tipp: Einschwingen</summary><p>Nach jeder Änderung von f<sub>E</sub> braucht das Pendel einige Sekunden, bis es gleichmäßig schwingt. Speichere erst, wenn „eingeschwungen“ angezeigt wird.</p></details>
+      <details class="tip"><summary>Tipp: hilft oder bremst?</summary><p>Ist die Aufhängung oben, zieht die Feder das Pendel stärker nach oben. Bewegt sich das Pendel in diesem Moment nach oben, wird es schneller: Der Antrieb führt Energie zu. Bewegt es sich gerade nach unten, wird es gebremst.</p></details>
+    </section>
+    <section class="card" data-panel="3" aria-labelledby="h-c3">
+      <h2 id="h-c3">Bedienfeld</h2>
+      <div class="row">
+        <button class="btn primary" type="button" data-run>Pause</button>
+        <button class="btn" type="button" data-reset>Ruhe herstellen</button>
+      </div>
+      <div class="field">
+        <div class="fieldhead"><label for="f3">Erregerfrequenz f<sub>E</sub></label><output id="f3out" class="val" for="f3">0,50 Hz</output></div>
+        <input id="f3" type="range" min="0.4" max="2.8" step="0.01" value="0.5">
+        <div class="row">
+          <button class="btn small" type="button" data-step3="-0.1">−0,10</button>
+          <button class="btn small" type="button" data-step3="-0.01">−0,01</button>
+          <button class="btn small" type="button" data-step3="0.01">+0,01</button>
+          <button class="btn small" type="button" data-step3="0.1">+0,10</button>
+        </div>
+      </div>
+      <div class="field">
+        <div class="fieldhead"><label for="b3">Dämpfung b</label><output id="b3out" class="val" for="b3">0,5 N·s/m</output></div>
+        <input id="b3" type="range" min="0.3" max="1.5" step="0.1" value="0.5">
+        <div class="scale"><span>schwach</span><span>stark</span></div>
+      </div>
+      <div class="field">
+        <span class="lbl" style="font-weight:500">Tempo</span>
+        <div class="seg" role="group" aria-label="Simulationstempo">
+          <button class="btn" type="button" data-speed="0.5">½×</button>
+          <button class="btn" type="button" data-speed="1">1×</button>
+          <button class="btn" type="button" data-speed="2">2×</button>
+          <button class="btn" type="button" data-speed="4">4×</button>
+        </div>
+      </div>
+      <div class="field" style="gap:0">
+        <label class="check"><input type="checkbox" id="chkArrows3" checked> Bewegungspfeile anzeigen</label>
+        <label class="check"><input type="checkbox" id="chkPhase3"> Phasenverschiebung messen</label>
+        <label class="check"><input type="checkbox" id="chkLamp3"> Anzeige „Antrieb hilft / bremst“</label>
+      </div>
+    </section>
+ 
+    <!-- ================= Stufe 4 ================= -->
+    <section class="card task" data-panel="4" aria-labelledby="h-t4">
+      <h2 id="h-t4">Auftrag 4 · Challenges</h2>
+      <div class="subtabs" role="group" aria-label="Challenge wählen">
+        <button class="btn" type="button" data-tab4="mass">A · Unbekannte Masse</button>
+        <button class="btn" type="button" data-tab4="bridge">B · Brücke retten</button>
+        <button class="btn" type="button" data-tab4="nod">C · Ohne Dämpfung</button>
+      </div>
+      <div data-sub4="mass">
+        <h3>Challenge A · Die unbekannte Masse</h3>
+        <p>Das graue Pendel hat eine unbekannte Masse. Die Feder hat wie immer D = 20 N/m. Bestimme m mit <b>möglichst wenigen Messpunkten</b>.</p>
+        <details class="tip"><summary>Tipp 1</summary><p>Suche zuerst grob in Schritten von 0,1 Hz, dann fein um das Maximum herum.</p></details>
+        <details class="tip"><summary>Tipp 2</summary><p>Stelle T = 2π·√(m/D) nach m um. Mit T = 1/f<sub>0</sub> erhältst du m = D / (2π·f<sub>0</sub>)².</p></details>
+      </div>
+      <div data-sub4="bridge">
+        <h3>Challenge B · Brücke retten</h3>
+        <p>Menschen laufen im Gleichschritt über eine Fußgängerbrücke und regen sie genau mit ihrer Eigenfrequenz an. Ingenieure bauen Dämpfer ein.</p>
+        <p>Wähle die Dämpfung so, dass die Amplitude <b>unter 3 cm</b> bleibt. Dämpfer sind teuer: Nimm <b>so wenig Dämpfung wie möglich</b>.</p>
+        <details class="tip"><summary>Tipp</summary><p>Nach jeder Änderung braucht die Brücke Zeit, bis sie eingeschwungen ist. Bei Resonanz gilt ungefähr: doppelte Dämpfung, halbe Amplitude.</p></details>
+      </div>
+      <div data-sub4="nod">
+        <h3>Challenge C · Ganz ohne Dämpfung</h3>
+        <ol>
+          <li>Stelle f<sub>E</sub> = 1,01 Hz ein (= f<sub>0</sub>) und tippe auf „Ruhe herstellen“. Beschreibe, wie sich die Amplitude entwickelt. Was würde mit einem echten Bauteil passieren?</li>
+          <li>Stelle f<sub>E</sub> = 1,10 Hz ein und tippe wieder auf „Ruhe herstellen“. Beschreibe den Verlauf der Amplitude.</li>
+          <li>Begründe mit Stufe 3, warum die Amplitude in Aufgabe 1 immer weiter wächst.</li>
+        </ol>
+        <details class="tip"><summary>Lösung zu 1</summary><p>Die Amplitude wächst gleichmäßig immer weiter. Ein echtes Bauteil würde irgendwann beschädigt oder zerstört (Resonanzkatastrophe).</p></details>
+        <details class="tip"><summary>Lösung zu 2</summary><p>Die Amplitude wächst, wird wieder kleiner, wächst erneut und so weiter (Schwebung). Antrieb und Pendel laufen langsam auseinander: Mal hilft der Antrieb, mal bremst er.</p></details>
+        <details class="tip"><summary>Lösung zu 3</summary><p>Bei f<sub>E</sub> = f<sub>0</sub> hinkt das Pendel eine Viertelperiode hinterher. Dann hilft der Antrieb in jedem Moment, und in jeder Periode kommt Energie hinzu. Ohne Dämpfung geht keine Energie verloren.</p></details>
+      </div>
+    </section>
+    <section class="card" data-panel="4" aria-labelledby="h-c4c">
+      <h2 id="h-c4c">Bedienfeld</h2>
+      <div class="row">
+        <button class="btn primary" type="button" data-run>Pause</button>
+        <button class="btn" type="button" data-reset>Ruhe herstellen</button>
+      </div>
+      <div class="field" id="f4box">
+        <div class="fieldhead"><label for="f4">Erregerfrequenz f<sub>E</sub></label><output id="f4out" class="val" for="f4">1,00 Hz</output></div>
+        <input id="f4" type="range" min="0.4" max="2.8" step="0.01" value="1">
+        <div class="row">
+          <button class="btn small" type="button" data-step4="-0.1">−0,10</button>
+          <button class="btn small" type="button" data-step4="-0.01">−0,01</button>
+          <button class="btn small" type="button" data-step4="0.01">+0,01</button>
+          <button class="btn small" type="button" data-step4="0.1">+0,10</button>
+        </div>
+      </div>
+      <div class="field" id="b4box">
+        <div class="fieldhead"><label for="b4">Dämpfung b</label><output id="b4out" class="val" for="b4">0,15 N·s/m</output></div>
+        <input id="b4" type="range" min="0.1" max="2" step="0.05" value="0.15">
+        <div class="scale"><span>schwach</span><span>stark</span></div>
+      </div>
+      <div class="field">
+        <span class="lbl" style="font-weight:500">Tempo</span>
+        <div class="seg" role="group" aria-label="Simulationstempo">
+          <button class="btn" type="button" data-speed="1">1×</button>
+          <button class="btn" type="button" data-speed="2">2×</button>
+          <button class="btn" type="button" data-speed="4">4×</button>
+        </div>
+      </div>
+      <div class="field" id="massCheck4">
+        <label for="mIn4" style="font-weight:500">Deine Masse m in kg</label>
+        <div class="row">
+          <input id="mIn4" class="text-in" type="text" inputmode="decimal" placeholder="z. B. 0,45" autocomplete="off">
+          <button class="btn primary" id="btnCheckM4" type="button">Prüfen</button>
+          <button class="btn" id="btnNewM4" type="button">Neue Masse</button>
+        </div>
+        <p class="feedback" id="fbM4" role="status"></p>
+      </div>
+      <div class="field" id="bridgeCheck4">
+        <div class="readouts" style="margin-top:0">
+          <div class="readout"><span>Amplitude der Brücke</span><output id="ampB4">0,0 cm</output></div>
+          <div class="readout"><span>Zustand</span><output id="steadyB4" style="font-size:1rem;font-family:var(--font-body)">–</output></div>
+        </div>
+        <div class="row"><button class="btn primary" id="btnCheckB4" type="button">Prüfen</button></div>
+        <p class="feedback" id="fbB4" role="status"></p>
+      </div>
+    </section>
+  </div>
+</main>
+<footer>Eigener Nachbau, angelehnt an die PhET-Simulation „Resonanz“. Läuft im Browser, ohne Flash. Es werden keine Daten gespeichert oder übertragen.</footer>
+</div>
+ 
+<script>
+(function(){
+'use strict';
+/* ================= Physik ================= */
+var D=20, F_MIN=0.4, F_MAX=2.8, PX=14, BK=0.1, NB=80;
+var MASSES=[0.8,0.5,0.3,0.2,0.1];
+function f0of(m){ return Math.sqrt(D/m)/(2*Math.PI); }
+function thAmp(m,b,A,f){
+  var w0sq=D/m, g=b/m, w=2*Math.PI*f, d=w0sq-w*w, den=Math.sqrt(d*d+g*g*w*w);
+  return den===0?Infinity:A*w0sq/den;
+}
+function thPhase(m,b,f){
+  var w0sq=D/m, g=b/m, w=2*Math.PI*f;
+  return Math.atan2(g*w,w0sq-w*w)*180/Math.PI;
+}
+function thPeak(m,b,A){
+  var pk=0; for(var f=F_MIN;f<=F_MAX+1e-9;f+=0.005){ var a=thAmp(m,b,A,f); if(a>pk) pk=a; } return pk;
+}
+ 
+var sim={n:0,m:[],w0sq:[],gam:[],U:[],V:[],b:0.5,A:0.5,f:1,phase:0,t:0,drive:'motor',p:0,hT:0,speed:1,running:true,
+  bId:[],bMax:[],ampHist:[],ampNext:0,hist:[],histNext:0,lastP:0,lastU:0,pUpLast:-1,phiList:[],tState:0,tUps:[],changeT:0};
+ 
+function configure(masses,b,drive){
+  sim.n=masses.length; sim.m=masses.slice(); sim.drive=drive; sim.A=0.5;
+  sim.w0sq=[]; sim.U=[]; sim.V=[]; sim.bId=[]; sim.bMax=[]; sim.ampHist=[];
+  for(var i=0;i<sim.n;i++){
+    sim.w0sq.push(D/masses[i]); sim.U.push(0); sim.V.push(0);
+    sim.bId.push(new Array(NB).fill(-1)); sim.bMax.push(new Array(NB).fill(0)); sim.ampHist.push([]);
+  }
+  sim.t=0; sim.phase=0; sim.p=0; sim.hT=0; sim.ampNext=0; sim.histNext=0; sim.hist=[];
+  sim.lastP=0; sim.lastU=0; sim.pUpLast=-1; sim.phiList=[]; sim.tState=0; sim.tUps=[]; sim.changeT=0;
+  setDamp(b);
+}
+function setDamp(b){ sim.b=b; sim.gam=sim.m.map(function(m){ return b/m; }); sim.changeT=sim.t; }
+function setMassAt(i,m){ sim.m[i]=m; sim.w0sq[i]=D/m; sim.gam[i]=sim.b/m; sim.changeT=sim.t; }
+function resetOsc(){
+  for(var i=0;i<sim.n;i++){ sim.U[i]=0; sim.V[i]=0; sim.bId[i].fill(-1); sim.bMax[i].fill(0); sim.ampHist[i]=[]; }
+  sim.hist=[]; sim.phiList=[]; sim.pUpLast=-1; sim.tUps=[]; sim.changeT=sim.t;
+}
+function rk4(i,dt,p0,pm,p1){
+  var w=sim.w0sq[i], g=sim.gam[i], u0=sim.U[i], v0=sim.V[i];
+  function a(u,v,p){ return -w*(u-p)-g*v; }
+  var k1u=v0, k1v=a(u0,v0,p0);
+  var k2u=v0+dt/2*k1v, k2v=a(u0+dt/2*k1u,v0+dt/2*k1v,pm);
+  var k3u=v0+dt/2*k2v, k3v=a(u0+dt/2*k2u,v0+dt/2*k2v,pm);
+  var k4u=v0+dt*k3v, k4v=a(u0+dt*k3u,v0+dt*k3v,p1);
+  sim.U[i]=u0+dt/6*(k1u+2*k2u+2*k3u+k4u);
+  sim.V[i]=v0+dt/6*(k1v+2*k2v+2*k3v+k4v);
+}
+function stepOnce(dt,p0,pm,p1){
+  var i;
+  for(i=0;i<sim.n;i++) rk4(i,dt,p0,pm,p1);
+  var tPrev=sim.t; sim.t+=dt;
+  var id=Math.floor(sim.t/BK), slot=id%NB;
+  for(i=0;i<sim.n;i++){
+    if(sim.bId[i][slot]!==id){ sim.bId[i][slot]=id; sim.bMax[i][slot]=0; }
+    var aa=Math.abs(sim.U[i]); if(aa>sim.bMax[i][slot]) sim.bMax[i][slot]=aa;
+  }
+  /* Nulldurchgänge nach oben: Aufhängung und Pendel 0 -> Phasenverschiebung */
+  var pPrev=sim.lastP, uPrev=sim.lastU, u=sim.U[0];
+  if(pPrev<0 && p1>=0){ sim.pUpLast=tPrev+dt*(-pPrev)/(p1-pPrev); }
+  if(uPrev<0 && u>=0 && sim.pUpLast>=0 && sim.drive==='motor'){
+    var tc=tPrev+dt*(-uPrev)/(u-uPrev);
+    var phi=(360*sim.f*(tc-sim.pUpLast))%360; if(phi>300) phi-=360;
+    sim.phiList.push(phi); if(sim.phiList.length>3) sim.phiList.shift();
+  }
+  /* Takt der Hand (mit Hysterese) */
+  if(sim.drive==='hand'){
+    if(p1<-0.15) sim.tState=-1;
+    else if(p1>0.15 && sim.tState===-1){ sim.tState=1; sim.tUps.push(sim.t); if(sim.tUps.length>5) sim.tUps.shift(); }
+  }
+  sim.lastP=p1; sim.lastU=u;
+  if(sim.t>=sim.histNext){
+    sim.hist.push({t:sim.t,p:p1,u:u,v:sim.V[0]}); sim.histNext=sim.t+1/60;
+    while(sim.hist.length && sim.hist[0].t<sim.t-8) sim.hist.shift();
+  }
+  if(sim.t>=sim.ampNext){
+    for(i=0;i<sim.n;i++){ var h=sim.ampHist[i]; h.push(amp(i,sim.drive==='hand'?2.5:1.15/sim.f)); if(h.length>900) h.shift(); }
+    sim.ampNext=sim.t+0.1;
+  }
+}
+function advance(simDt){
+  var n=Math.max(1,Math.ceil(simDt*240)), dt=simDt/n, k;
+  if(sim.drive==='hand'){
+    var pS=sim.p, pE=sim.p+(sim.hT-sim.p)*(1-Math.exp(-simDt/0.03));
+    for(k=0;k<n;k++) stepOnce(dt,pS+(pE-pS)*k/n,pS+(pE-pS)*(k+0.5)/n,pS+(pE-pS)*(k+1)/n);
+    sim.p=pE;
+  } else {
+    var w=2*Math.PI*sim.f, A=sim.A;
+    for(k=0;k<n;k++){
+      var ph=sim.phase;
+      stepOnce(dt,A*Math.cos(ph),A*Math.cos(ph+w*dt/2),A*Math.cos(ph+w*dt));
+      sim.phase=(ph+w*dt)%(2*Math.PI);
+    }
+    sim.p=A*Math.cos(sim.phase);
+  }
+}
+function amp(i,Wo){
+  var W=Wo||(sim.drive==='hand'?2.5:Math.max(2/sim.f,1.0));
+  var nb=Math.min(NB-2,Math.ceil(W/BK)), id=Math.floor(sim.t/BK), m=0;
+  for(var k=0;k<=nb;k++){
+    var j=id-k; if(j<0) break;
+    var slot=j%NB;
+    if(sim.bId[i][slot]===j && sim.bMax[i][slot]>m) m=sim.bMax[i][slot];
+  }
+  return m;
+}
+function isSteady(i){
+  if(sim.t-sim.changeT<3) return false;
+  var h=sim.ampHist[i]; if(h.length<25) return false;
+  var a=h[h.length-1], b=h[h.length-21];
+  return Math.abs(a-b)<Math.max(0.03*a,0.02);
+}
+function phiNow(){
+  if(sim.phiList.length<2) return null;
+  var s=0; for(var k=0;k<sim.phiList.length;k++) s+=sim.phiList[k];
+  return s/sim.phiList.length;
+}
+function handFreq(){
+  var u=sim.tUps; if(u.length<3 || sim.t-u[u.length-1]>2.5) return null;
+  return (u.length-1)/(u[u.length-1]-u[0]);
+}
+ 
+/* ================= Hilfen ================= */
+var $=function(id){ return document.getElementById(id); };
+var qa=function(sel,root){ return Array.prototype.slice.call((root||document).querySelectorAll(sel)); };
+function fmt(x,d){ var s=x.toFixed(d); if(/^-0(\.0*)?$/.test(s)) s=s.slice(1); return s.replace('.',','); }
+function clamp(x,a,b){ return Math.max(a,Math.min(b,x)); }
+function niceCeil(x){
+  var a=[1,2,3,4,5,6,8,10,12,15,20]; for(var k=0;k<a.length;k++){ if(a[k]>=x) return a[k]; } return Math.ceil(x);
+}
+function niceStep(top){ var c=[0.5,1,2,5,10]; for(var k=0;k<c.length;k++){ if(top/c[k]<=6) return c[k]; } return 10; }
+var msgTimers={};
+function say(id,t,ms){
+  var el=$(id); el.textContent=t; clearTimeout(msgTimers[id]);
+  if(t) msgTimers[id]=setTimeout(function(){ el.textContent=''; },ms||7000);
+}
+ 
+/* ================= Zustand der Stufen ================= */
+var stage=1;
+var st1={m:0.5,done:{}};
+var st2={active:[true,false,false,true,false],sel:0,preds:[null,null,null,null,null],pts:[[],[],[],[],[]],b:0.5,f:1.0,
+  unlocked:false,swept:false,sw:null,ymax:5};
+var st3={b:0.5,f:0.5,pts:[]};
+var st4={tab:'mass',mass:0,mpts:[],msaves:0,fm:1.0,fn:1.01,bb:0.15,solved:false};
+function newMass(){ st4.mass=Math.round((0.15+Math.random()*0.75)*100)/100; st4.mpts=[]; st4.msaves=0; st4.solved=false; }
+newMass();
+ 
+/* ================= Zeichnen ================= */
+var stageCv=$('stage'), STAGE_H=470, sctx=null, sW=600;
+var charts={chartRes:{h:290},chartYT:{h:220},chartPhase:{h:290},chartMass:{h:290},chartAmpT:{h:290}};
+var COL={r:[]}, FONT='sans-serif', MONO='monospace';
+function readColors(){
+  var cs=getComputedStyle(document.documentElement);
+  function g(n){ return cs.getPropertyValue(n).trim(); }
+  ['surface','stage','ink','muted','line','grid','accent','good','bad','q'].forEach(function(k){ COL[k]=g('--'+k); });
+  COL.onr=g('--on-r'); COL.r=[g('--r1'),g('--r2'),g('--r3'),g('--r4'),g('--r5')];
+  FONT=getComputedStyle(document.body).fontFamily||'sans-serif'; MONO=g('--font-mono')||'monospace';
+}
+function sizeCanvas(cv,h){
+  var w=Math.max(260,Math.floor(cv.clientWidth)||600), dpr=Math.min(window.devicePixelRatio||1,2);
+  cv.width=Math.round(w*dpr); cv.height=Math.round(h*dpr);
+  var ctx=cv.getContext('2d'); ctx.setTransform(dpr,0,0,dpr,0,0);
+  return {w:w,ctx:ctx};
+}
+function resize(){
+  var a=sizeCanvas(stageCv,STAGE_H); sctx=a.ctx; sW=a.w;
+  Object.keys(charts).forEach(function(id){
+    var cv=$(id); if(!cv.offsetParent){ charts[id].ctx=null; return; }
+    var r=sizeCanvas(cv,charts[id].h); charts[id].ctx=r.ctx; charts[id].w=r.w;
+  });
+}
+function rrect(ctx,x,y,w,h,r){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y); ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r); ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  ctx.lineTo(x+r,y+h); ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+  ctx.lineTo(x,y+r); ctx.quadraticCurveTo(x,y,x+r,y); ctx.closePath();
+}
+function drawSpring(ctx,x,y0,y1){
+  var len=y1-y0; ctx.beginPath(); ctx.moveTo(x,y0);
+  if(len<8){ ctx.lineTo(x,y1); ctx.stroke(); return; }
+  var n=14, lead=Math.min(10,len*0.12), a=7, span=len-2*lead;
+  ctx.lineTo(x,y0+lead);
+  for(var k=1;k<=n;k++) ctx.lineTo(x+(k%2?a:-a),y0+lead+span*(k-0.5)/n);
+  ctx.lineTo(x,y1-lead); ctx.lineTo(x,y1); ctx.stroke();
+}
+function arrow(ctx,x,y,len,color){
+  /* senkrechter Pfeil, len>0 nach oben */
+  if(Math.abs(len)<3) { ctx.fillStyle=color; ctx.beginPath(); ctx.arc(x,y,3,0,Math.PI*2); ctx.fill(); return; }
+  var s=len>0?-1:1, tip=y+s*Math.abs(len);
+  ctx.strokeStyle=color; ctx.fillStyle=color; ctx.lineWidth=3; ctx.lineCap='round';
+  ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x,tip-s*6); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(x,tip); ctx.lineTo(x-6,tip-s*9); ctx.lineTo(x+6,tip-s*9); ctx.closePath(); ctx.fill();
+  ctx.lineCap='butt';
+}
+ 
+function rigCfg(){
+  var c={idx:[],colors:[],labels:[],subs:[],sel:-1,ymax:10,goal:null,limit:null,arrows:false,lamp:false,f0:false,top:''};
+  if(stage===1){
+    c.idx=[0]; c.colors=[COL.r[1]]; c.labels=['']; c.subs=[fmt(sim.m[0],2)+' kg']; c.goal=8; c.top='Du bist der Antrieb';
+  } else if(stage===2){
+    for(var i=0;i<5;i++) if(st2.active[i]){ c.idx.push(i); c.colors.push(COL.r[i]); c.labels.push('R'+(i+1)); c.subs.push(fmt(MASSES[i],2)+' kg'); }
+    c.sel=st2.sel; c.ymax=st2.ymax; c.f0=st2.unlocked && $('chkF02').checked;
+  } else if(stage===3){
+    c.idx=[0]; c.colors=[COL.r[1]]; c.labels=['']; c.subs=['0,50 kg'];
+    c.ymax=niceCeil(thPeak(0.5,sim.b,sim.A)*1.1); c.arrows=$('chkArrows3').checked; c.lamp=$('chkLamp3').checked;
+  } else {
+    c.idx=[0];
+    if(st4.tab==='mass'){ c.colors=[COL.q]; c.labels=['?']; c.subs=['m = ?']; c.ymax=5; }
+    else if(st4.tab==='bridge'){ c.colors=[COL.r[0]]; c.labels=['Brücke']; c.subs=['0,50 kg']; c.ymax=10; c.limit=3; c.top='Gleichschritt: f = '+fmt(sim.f,2)+' Hz'; }
+    else { c.colors=[COL.r[1]]; c.labels=['']; c.subs=['0,50 kg, b = 0']; c.ymax=10; }
+  }
+  if(!c.top) c.top='Motor: f = '+fmt(sim.f,2)+' Hz';
+  return c;
+}
+ 
+var drag=null;
+function drawStage(){
+  if(!sctx) return;
+  var ctx=sctx, W=sW, H=STAGE_H, c=rigCfg(), motor=sim.drive==='motor';
+  var barY=72, yC=250, gBase=404, gH=46, xR=motor?W-56:W-12;
+  ctx.clearRect(0,0,W,H); ctx.fillStyle=COL.stage; ctx.fillRect(0,0,W,H);
+  ctx.textBaseline='alphabetic';
+  ctx.fillStyle=COL.muted; ctx.font='500 13px '+FONT; ctx.textAlign='left';
+  ctx.fillText(c.top,14,24);
+ 
+  var by=barY-sim.p*PX;
+  ctx.strokeStyle=COL.line; ctx.lineWidth=1; ctx.setLineDash([4,4]);
+  ctx.beginPath(); ctx.moveTo(12,barY); ctx.lineTo(xR,barY); ctx.stroke(); ctx.setLineDash([]);
+  ctx.fillStyle=COL.ink; rrect(ctx,12,by-6,xR-12,12,4); ctx.fill();
+ 
+  if(motor){
+    var cx=W-30, r=20, rp=sim.A*PX, px=cx+rp*Math.sin(sim.phase), py=barY-rp*Math.cos(sim.phase);
+    ctx.fillStyle=COL.surface; ctx.strokeStyle=COL.muted; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.arc(cx,barY,r,0,Math.PI*2); ctx.fill(); ctx.stroke();
+    ctx.fillStyle=COL.muted; ctx.beginPath(); ctx.arc(cx,barY,3,0,Math.PI*2); ctx.fill();
+    ctx.strokeStyle=COL.muted; ctx.lineWidth=1.5; ctx.beginPath(); ctx.moveTo(cx,barY); ctx.lineTo(px,py); ctx.stroke();
+    ctx.strokeStyle=COL.ink; ctx.lineWidth=2.5; rrect(ctx,xR,by-6,cx+14-xR,12,4); ctx.stroke();
+    ctx.fillStyle=COL.accent; ctx.beginPath(); ctx.arc(px,py,4.5,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle=COL.muted; ctx.font='500 11px '+FONT; ctx.textAlign='center'; ctx.fillText('Motor',cx,barY+36);
+  } else {
+    var hx=52;
+    ctx.fillStyle=COL.accent; ctx.beginPath(); ctx.arc(hx,by,15,0,Math.PI*2); ctx.fill();
+    ctx.strokeStyle=COL.surface; ctx.lineWidth=2;
+    for(var g=-1;g<=1;g++){ ctx.beginPath(); ctx.moveTo(hx-7,by+g*4); ctx.lineTo(hx+7,by+g*4); ctx.stroke(); }
+    if(!drag){
+      var pulse=0.55+0.45*Math.sin(performance.now()/300);
+      ctx.globalAlpha=pulse; ctx.fillStyle=COL.accent; ctx.font='600 13px '+FONT; ctx.textAlign='left';
+      ctx.fillText('↕ irgendwo im Feld ziehen',hx-14,by+34); ctx.globalAlpha=1;
+    }
+  }
+ 
+  ctx.strokeStyle=COL.line; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(10,gBase); ctx.lineTo(W-10,gBase); ctx.stroke();
+ 
+  var k=c.idx.length, areaL=12, areaW=(motor?W-64:W-12)-areaL;
+  var colW=Math.min(areaW/k,220), x0=areaL+(areaW-colW*k)/2, clipped=false;
+  for(var j=0;j<k;j++){
+    var i=c.idx[j], m=sim.m[i], cxp=x0+colW*(j+0.5);
+    var mw=Math.min(colW-14,40+30*m), mh=26+22*m;
+    if(c.labels[j].length>2) mw=Math.max(mw,Math.min(colW-14,70));
+    var dRaw=sim.U[i]*PX, d=clamp(dRaw,-140,140); if(Math.abs(dRaw)>140) clipped=true;
+    var cy=yC-d, top=cy-mh/2, sel=(i===c.sel);
+ 
+    ctx.strokeStyle=COL.muted; ctx.globalAlpha=0.55; ctx.lineWidth=1; ctx.setLineDash([3,3]);
+    ctx.beginPath(); ctx.moveTo(cxp-mw/2-8,yC); ctx.lineTo(cxp+mw/2+8,yC); ctx.stroke();
+    ctx.setLineDash([]); ctx.globalAlpha=1;
+    if(c.limit){
+      ctx.strokeStyle=COL.bad; ctx.lineWidth=1.5; ctx.setLineDash([6,4]);
+      [1,-1].forEach(function(s){ var yy=yC-s*c.limit*PX; ctx.beginPath(); ctx.moveTo(cxp-mw/2-30,yy); ctx.lineTo(cxp+mw/2+30,yy); ctx.stroke(); });
+      ctx.setLineDash([]); ctx.fillStyle=COL.bad; ctx.font='500 11px '+FONT; ctx.textAlign='left';
+      ctx.fillText('+3 cm',cxp+mw/2+34,yC-c.limit*PX+4); ctx.fillText('−3 cm',cxp+mw/2+34,yC+c.limit*PX+4);
+    }
+    ctx.strokeStyle=COL.muted; ctx.lineWidth=2; ctx.lineJoin='round';
+    drawSpring(ctx,cxp,by+6,top);
+    ctx.fillStyle=c.colors[j]; rrect(ctx,cxp-mw/2,top,mw,mh,6); ctx.fill();
+    if(sel){ ctx.strokeStyle=COL.ink; ctx.lineWidth=3; rrect(ctx,cxp-mw/2-1.5,top-1.5,mw+3,mh+3,7); ctx.stroke(); }
+    ctx.fillStyle=COL.onr; ctx.font='600 14px '+FONT; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(c.labels[j],cxp,cy+1); ctx.textBaseline='alphabetic';
+ 
+    if(c.arrows){
+      var w=2*Math.PI*sim.f, vp=-Math.sin(sim.phase);
+      var a0=Math.max(amp(i),0.05), vm=clamp(sim.V[i]/(a0*w),-1,1);
+      arrow(ctx,cxp-mw/2-22,by+26,vp*26,COL.ink);
+      arrow(ctx,cxp+mw/2+22,cy,vm*30,c.colors[j]);
+      ctx.font='500 11px '+FONT; ctx.fillStyle=COL.muted; ctx.textAlign='center';
+      ctx.fillText('Aufhängung',cxp-mw/2-22,by+66); ctx.fillText('Pendel',cxp+mw/2+22,cy+46);
+    }
+ 
+    var a=amp(i), bh=clamp(a/c.ymax,0,1)*gH, bw=Math.min(28,colW-20);
+    ctx.globalAlpha=0.35; ctx.fillStyle=COL.line; ctx.fillRect(cxp-bw/2,gBase-gH,bw,gH); ctx.globalAlpha=1;
+    ctx.fillStyle=c.colors[j]; ctx.fillRect(cxp-bw/2,gBase-bh,bw,bh);
+    var mark=c.goal||c.limit;
+    if(mark){
+      var my=gBase-clamp(mark/c.ymax,0,1)*gH;
+      ctx.strokeStyle=c.goal?COL.good:COL.bad; ctx.lineWidth=2;
+      ctx.beginPath(); ctx.moveTo(cxp-bw/2-6,my); ctx.lineTo(cxp+bw/2+6,my); ctx.stroke();
+      ctx.fillStyle=ctx.strokeStyle; ctx.font='500 11px '+FONT; ctx.textAlign='left';
+      ctx.fillText(fmt(mark,0)+' cm',cxp+bw/2+9,my+4);
+    }
+    ctx.textAlign='center'; ctx.fillStyle=COL.ink; ctx.font=(sel?'600 ':'500 ')+'12px '+FONT;
+    ctx.fillText(c.subs[j],cxp,gBase+18);
+    ctx.font='600 13px '+MONO; ctx.fillText(fmt(a,1)+' cm',cxp,gBase+36);
+    if(c.f0){ ctx.fillStyle=COL.muted; ctx.font='500 12px '+MONO; ctx.fillText('f₀ '+fmt(f0of(m),2)+' Hz',cxp,gBase+53); }
+  }
+ 
+  if(c.lamp){
+    var help=sim.p*sim.V[0]>0, frac=helpFraction();
+    var txt=help?'Antrieb hilft':'Antrieb bremst', lw=150, lx=14, ly=104;
+    ctx.fillStyle=help?COL.good:COL.bad; rrect(ctx,lx,ly,lw,30,15); ctx.fill();
+    ctx.fillStyle=COL.surface; ctx.font='600 14px '+FONT; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(txt,lx+lw/2,ly+15); ctx.textBaseline='alphabetic';
+    if(frac!==null){ ctx.fillStyle=COL.ink; ctx.font='500 12px '+FONT; ctx.fillText('hilft '+fmt(frac*100,0)+' % der Zeit',lx+lw/2,ly+48); }
+  }
+  if(stage===1){
+    var hf=handFreq(); ctx.textAlign='right'; ctx.fillStyle=COL.ink; ctx.font='600 15px '+MONO;
+    ctx.fillText('Dein Takt: '+(hf===null?'–':fmt(hf,2)+' Hz'),W-14,24);
+  }
+  if(clipped){ ctx.textAlign='right'; ctx.fillStyle=COL.ink; ctx.font='500 12px '+FONT; ctx.fillText('Anzeige bei ±10 cm begrenzt',W-14,stage===1?44:24); }
+  ctx.textAlign='left';
+}
+function helpFraction(){
+  var h=sim.hist; if(h.length<20) return null;
+  var win=Math.min(2/sim.f,7.5), t0=sim.t-win, n=0, p=0;
+  for(var k=h.length-1;k>=0 && h[k].t>=t0;k--){ n++; if(h[k].p*h[k].v>0) p++; }
+  return n>10?p/n:null;
+}
+ 
+function axes(ctx,W,H,o){
+  var L=52,R=14,T=14,B=46,pw=W-L-R,ph=H-T-B;
+  function X(x){ return L+(x-o.xmin)/(o.xmax-o.xmin)*pw; }
+  function Y(y){ return T+ph-(clamp(y,o.ymin,o.ymax)-o.ymin)/(o.ymax-o.ymin)*ph; }
+  ctx.clearRect(0,0,W,H); ctx.fillStyle=COL.surface; ctx.fillRect(0,0,W,H);
+  ctx.font='12px '+MONO; ctx.lineWidth=1; ctx.textAlign='right'; ctx.textBaseline='middle';
+  var v;
+  for(v=o.ymin;v<=o.ymax+1e-9;v+=o.ystep){
+    ctx.strokeStyle=COL.grid; ctx.beginPath(); ctx.moveTo(L,Y(v)); ctx.lineTo(W-R,Y(v)); ctx.stroke();
+    ctx.fillStyle=COL.muted; ctx.fillText(o.yfmt?o.yfmt(v):fmt(v,o.ystep<1?1:0),L-8,Y(v));
+  }
+  ctx.textAlign='center'; ctx.textBaseline='top';
+  var xs=Math.ceil(o.xmin/o.xstep-1e-9)*o.xstep;
+  for(v=xs;v<=o.xmax+1e-9;v+=o.xstep){
+    ctx.strokeStyle=COL.grid; ctx.beginPath(); ctx.moveTo(X(v),T); ctx.lineTo(X(v),T+ph); ctx.stroke();
+    ctx.fillStyle=COL.muted; ctx.fillText(o.xfmt?o.xfmt(v):fmt(v,o.xstep<1?1:0),X(v),T+ph+6);
+  }
+  ctx.strokeStyle=COL.muted; ctx.lineWidth=1.5;
+  ctx.beginPath(); ctx.moveTo(L,T); ctx.lineTo(L,T+ph); ctx.lineTo(W-R,T+ph); ctx.stroke();
+  ctx.fillStyle=COL.ink; ctx.font='500 12px '+FONT; ctx.textBaseline='alphabetic';
+  ctx.fillText(o.xlabel,L+pw/2,H-8);
+  ctx.save(); ctx.translate(14,T+ph/2); ctx.rotate(-Math.PI/2); ctx.fillText(o.ylabel,0,0); ctx.restore();
+  return {X:X,Y:Y,L:L,T:T,pw:pw,ph:ph,R:R};
+}
+function plotPts(ctx,ax,pts,color,key){
+  if(!pts.length) return;
+  if(pts.length>1){
+    ctx.strokeStyle=color; ctx.globalAlpha=0.55; ctx.lineWidth=1.5; ctx.beginPath();
+    pts.forEach(function(p,k){ var x=ax.X(p.f), y=ax.Y(p[key]); if(k) ctx.lineTo(x,y); else ctx.moveTo(x,y); });
+    ctx.stroke(); ctx.globalAlpha=1;
+  }
+  var rad=pts.length>20?2.6:4.5;
+  pts.forEach(function(p){
+    ctx.fillStyle=color; ctx.strokeStyle=COL.surface; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.arc(ax.X(p.f),ax.Y(p[key]),rad,0,Math.PI*2); ctx.fill(); if(rad>3) ctx.stroke();
+  });
+}
+function plotFn(ctx,ax,fn,color){
+  ctx.strokeStyle=color; ctx.lineWidth=2; ctx.setLineDash([6,4]); ctx.beginPath();
+  for(var f=F_MIN,k=0;f<=F_MAX+1e-9;f+=0.01,k++){ var y=ax.Y(fn(f)); if(k) ctx.lineTo(ax.X(f),y); else ctx.moveTo(ax.X(f),y); }
+  ctx.stroke(); ctx.setLineDash([]);
+}
+function cursor(ctx,ax,f,y,color){
+  var lx=ax.X(f);
+  ctx.strokeStyle=COL.muted; ctx.lineWidth=1; ctx.setLineDash([3,4]);
+  ctx.beginPath(); ctx.moveTo(lx,ax.T); ctx.lineTo(lx,ax.T+ax.ph); ctx.stroke(); ctx.setLineDash([]);
+  if(y===null) return;
+  ctx.fillStyle=COL.surface; ctx.strokeStyle=color; ctx.lineWidth=3;
+  ctx.beginPath(); ctx.arc(lx,ax.Y(y),6,0,Math.PI*2); ctx.fill(); ctx.stroke();
+}
+function emptyText(ctx,ax,t){
+  ctx.fillStyle=COL.muted; ctx.font='500 13px '+FONT; ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText(t,ax.L+ax.pw/2,ax.T+ax.ph*0.4); ctx.textBaseline='alphabetic'; ctx.textAlign='left';
+}
+var RES_AX={xmin:F_MIN,xmax:F_MAX,xstep:0.5,ymin:0,xlabel:'Erregerfrequenz f_E in Hz',ylabel:'Amplitude in cm'};
+ 
+function drawChartRes(){
+  var C=charts.chartRes; if(!C.ctx) return;
+  var ctx=C.ctx, ax=axes(ctx,C.w,C.h,Object.assign({},RES_AX,{ymax:st2.ymax,ystep:niceStep(st2.ymax)}));
+  var i, total=0;
+  if(st2.unlocked && $('chkTh2').checked){
+    for(i=0;i<5;i++) if(st2.active[i]) (function(m){ plotFn(ctx,ax,function(f){ return thAmp(m,sim.b,sim.A,f); },COL.r[i]); })(MASSES[i]);
+  }
+  if(st2.unlocked && $('chkF02').checked){
+    for(i=0;i<5;i++) if(st2.active[i]){
+      var x=ax.X(f0of(MASSES[i])), yb=ax.T+ax.ph;
+      ctx.fillStyle=COL.r[i]; ctx.beginPath(); ctx.moveTo(x,yb-10); ctx.lineTo(x-6,yb); ctx.lineTo(x+6,yb); ctx.closePath(); ctx.fill();
+    }
+  }
+  for(i=0;i<5;i++){
+    if(!st2.active[i]) continue;
+    var pf=st2.preds[i];
+    if(pf!==null){
+      var px=ax.X(pf);
+      ctx.strokeStyle=COL.r[i]; ctx.lineWidth=2.5; ctx.setLineDash([2,5]); ctx.lineCap='round';
+      ctx.beginPath(); ctx.moveTo(px,ax.T+16); ctx.lineTo(px,ax.T+ax.ph); ctx.stroke(); ctx.setLineDash([]); ctx.lineCap='butt';
+      ctx.fillStyle=COL.r[i]; ctx.font='600 11px '+FONT; ctx.textAlign='center';
+      ctx.fillText('Vorhersage R'+(i+1),clamp(px,ax.L+40,ax.L+ax.pw-40),ax.T+10);
+    }
+    total+=st2.pts[i].length; plotPts(ctx,ax,st2.pts[i],COL.r[i],'a');
+  }
+  cursor(ctx,ax,sim.f,amp(st2.sel),COL.r[st2.sel]);
+  if(!total){
+    var miss=missingPreds();
+    emptyText(ctx,ax,miss.length?'Tippe hier, um die Vorhersage für R'+(st2.sel+1)+' zu setzen':'Frequenzdurchlauf starten oder Messpunkte speichern');
+  }
+  C.ax=ax;
+}
+function drawChartYT(){
+  var C=charts.chartYT; if(!C.ctx) return;
+  var h=sim.hist, win=clamp(3/sim.f,2,7.5), t1=sim.t, t0=t1-win, real=$('chkReal3').checked;
+  var pm=0.01, um=0.01, k;
+  for(k=0;k<h.length;k++) if(h[k].t>=t0){ pm=Math.max(pm,Math.abs(h[k].p)); um=Math.max(um,Math.abs(h[k].u)); }
+  var ym=real?niceCeil(Math.max(pm,um)*1.1):1.2;
+  var ax=axes(C.ctx,C.w,C.h,{xmin:0,xmax:win,xstep:win>4?1:0.5,ymin:-ym,ymax:ym,ystep:real?niceStep(2*ym):0.6,
+    xlabel:'Zeit in s (letzte '+fmt(win,1)+' s)',ylabel:real?'Auslenkung in cm':'Auslenkung (gestreckt)',
+    yfmt:real?null:function(){ return ''; }});
+  var ctx=C.ctx;
+  function line(key,scale,color,wid){
+    ctx.strokeStyle=color; ctx.lineWidth=wid; ctx.beginPath(); var first=true;
+    for(var k=0;k<h.length;k++){ if(h[k].t<t0) continue; var x=ax.X(h[k].t-t0), y=ax.Y(h[k][key]*scale);
+      if(first){ ctx.moveTo(x,y); first=false; } else ctx.lineTo(x,y); }
+    ctx.stroke();
+  }
+  line('p',real?1:1/pm,COL.ink,2); line('u',real?1:1/um,COL.r[1],2.5);
+  ctx.font='500 12px '+FONT; ctx.textAlign='left';
+  ctx.fillStyle=COL.ink; ctx.fillRect(ax.L+10,ax.T+6,16,3); ctx.fillText('Aufhängung',ax.L+32,ax.T+12);
+  ctx.fillStyle=COL.r[1]; ctx.fillRect(ax.L+120,ax.T+6,16,3); ctx.fillText('Pendel',ax.L+142,ax.T+12);
+}
+function drawChartPhase(){
+  var C=charts.chartPhase; if(!C.ctx) return;
+  var ctx=C.ctx, ax=axes(ctx,C.w,C.h,{xmin:F_MIN,xmax:F_MAX,xstep:0.5,ymin:0,ymax:180,ystep:45,
+    xlabel:'Erregerfrequenz f_E in Hz',ylabel:'Δφ in Grad',yfmt:function(v){ return fmt(v,0)+'°'; }});
+  if($('chkTheory3').checked) plotFn(ctx,ax,function(f){ return thPhase(0.5,sim.b,f); },COL.ink);
+  plotPts(ctx,ax,st3.pts,COL.r[1],'phi');
+  var p=phiNow();
+  cursor(ctx,ax,sim.f,p===null?null:clamp(p,0,180),COL.r[1]);
+  if(!st3.pts.length) emptyText(ctx,ax,'Stelle f_E ein, warte und tippe „Phase speichern“');
+}
+function drawChartMass(){
+  var C=charts.chartMass; if(!C.ctx) return;
+  var ctx=C.ctx, ax=axes(ctx,C.w,C.h,Object.assign({},RES_AX,{ymax:5,ystep:1}));
+  plotPts(ctx,ax,st4.mpts,COL.q,'a');
+  cursor(ctx,ax,sim.f,amp(0),COL.q);
+  if(!st4.mpts.length) emptyText(ctx,ax,'Noch keine Messpunkte');
+}
+function drawChartAmpT(){
+  var C=charts.chartAmpT; if(!C.ctx) return;
+  var h=sim.ampHist[0]||[], n=h.length, mx=0, k;
+  for(k=0;k<n;k++) if(h[k]>mx) mx=h[k];
+  var tEnd=Math.max(60,sim.t), t0=tEnd-60, ym=Math.max(2,niceCeil(mx*1.15));
+  var ax=axes(C.ctx,C.w,C.h,{xmin:t0,xmax:tEnd,xstep:10,ymin:0,ymax:ym,ystep:niceStep(ym),xlabel:'Zeit in s',ylabel:'Amplitude in cm'});
+  var ctx=C.ctx; ctx.strokeStyle=COL.r[1]; ctx.lineWidth=2.5; ctx.beginPath(); var first=true;
+  for(k=0;k<n;k++){ var t=sim.t-(n-1-k)*0.1; if(t<t0) continue; var x=ax.X(t), y=ax.Y(h[k]); if(first){ ctx.moveTo(x,y); first=false; } else ctx.lineTo(x,y); }
+  ctx.stroke();
+}
+function drawCharts(){
+  if(stage===2) drawChartRes();
+  else if(stage===3){ drawChartYT(); if($('chkPhase3').checked) drawChartPhase(); }
+  else if(stage===4){ if(st4.tab==='mass') drawChartMass(); else if(st4.tab==='nod') drawChartAmpT(); }
+}
+ 
+/* ================= Stufen wechseln ================= */
+function setStage(k){
+  stage=k; drag=null;
+  if(st2.sw && k!==2) st2.sw=null;
+  qa('.step').forEach(function(b){ if(+b.dataset.stage===k) b.setAttribute('aria-current','step'); else b.removeAttribute('aria-current'); });
+  qa('[data-panel]').forEach(function(el){ el.hidden=(+el.dataset.panel!==k); });
+  stageCv.classList.toggle('hand',k===1);
+  sim.running=true;
+  if(k===1){
+    configure([st1.m],0.4,'hand');
+    $('stageHint').textContent='Ziehe mit dem Finger oder der Maus irgendwo im Feld nach oben und unten. Feder: D = 20 N/m.';
+  } else if(k===2){
+    configure(MASSES,st2.b,'motor'); sim.f=st2.f; setSpeed(sim.speed>4?1:sim.speed);
+    update2(); advance(10);
+    $('stageHint').textContent='Alle Federn haben D = 20 N/m. Tippe auf ein Pendel, um es auszuwählen.';
+  } else if(k===3){
+    configure([0.5],st3.b,'motor'); sim.f=st3.f; syncF('f3',sim.f); advance(10);
+    $('stageHint').textContent='Feder D = 20 N/m, Masse 0,50 kg. Vergleiche die Bewegung von Aufhängung und Pendel.';
+  } else {
+    setTab4(st4.tab,true);
+  }
+  if(k!==3 && sim.speed===0.5) setSpeed(1);
+  syncRun(); syncSpeed();
+  requestAnimationFrame(resize);
+  try{ window.scrollTo({top:0,behavior:'smooth'}); }catch(e){}
+}
+function setTab4(t,silent){
+  st4.tab=t;
+  qa('[data-tab4]').forEach(function(b){ b.setAttribute('aria-pressed',b.dataset.tab4===t?'true':'false'); });
+  qa('[data-sub4]').forEach(function(el){ el.hidden=el.dataset.sub4!==t; });
+  $('chartCard4').hidden=(t==='bridge');
+  $('c4massChart').hidden=(t!=='mass'); $('c4nodChart').hidden=(t!=='nod');
+  $('f4box').hidden=(t==='bridge'); $('b4box').hidden=(t!=='bridge');
+  $('massCheck4').hidden=(t!=='mass'); $('bridgeCheck4').hidden=(t!=='bridge');
+  if(t==='mass'){
+    configure([st4.mass],0.5,'motor'); sim.f=st4.fm; syncF('f4',sim.f);
+    $('stageHint').textContent='Feder D = 20 N/m, Masse unbekannt, Dämpfung 0,5 N·s/m.';
+  } else if(t==='bridge'){
+    configure([0.5],st4.bb,'motor'); sim.f=f0of(0.5);
+    $('stageHint').textContent='Modell einer Fußgängerbrücke: angeregt genau mit ihrer Eigenfrequenz.';
+  } else {
+    configure([0.5],0,'motor'); sim.A=0.1; sim.f=st4.fn; syncF('f4',sim.f);
+    $('stageHint').textContent='Feder D = 20 N/m, Masse 0,50 kg, keine Dämpfung (f₀ ≈ 1,01 Hz).';
+  }
+  $('fbB4').textContent=''; $('fbM4').textContent='';
+  updateCount4();
+  if(!silent) requestAnimationFrame(resize);
+}
+ 
+/* ================= Bedienung allgemein ================= */
+function syncRun(){ qa('[data-run]').forEach(function(b){ b.textContent=sim.running?'Pause':'Start'; }); }
+function setSpeed(s){ sim.speed=s; syncSpeed(); }
+function syncSpeed(){ qa('[data-speed]').forEach(function(b){ b.setAttribute('aria-pressed',(+b.dataset.speed===sim.speed)?'true':'false'); }); }
+function syncF(id,f){ $(id).value=f; $(id+'out').textContent=fmt(f,2)+' Hz'; }
+qa('.step').forEach(function(b){ b.addEventListener('click',function(){ setStage(+b.dataset.stage); }); });
+qa('[data-run]').forEach(function(b){ b.addEventListener('click',function(){ sim.running=!sim.running; syncRun(); }); });
+qa('[data-reset]').forEach(function(b){ b.addEventListener('click',function(){
+  resetOsc(); sim.hT=0; sim.p=0; if(stage===2 && st2.sw){ st2.sw=null; update2(); }
+}); });
+qa('[data-speed]').forEach(function(b){ b.addEventListener('click',function(){ setSpeed(+b.dataset.speed); }); });
+function setFreq(f){ sim.f=clamp(Math.round(f*100)/100,F_MIN,F_MAX); sim.changeT=sim.t; return sim.f; }
+ 
+/* ---------- Stufe 1 ---------- */
+stageCv.addEventListener('pointerdown',function(e){
+  if(stage===1){
+    drag={id:e.pointerId,y0:e.clientY,p0:sim.hT};
+    try{ stageCv.setPointerCapture(e.pointerId); }catch(err){}
+    e.preventDefault(); return;
+  }
+  if(stage===2){
+    var r=stageCv.getBoundingClientRect(), act=activeList();
+    var motorW=r.width-64-12, colW=Math.min(motorW/act.length,220), x0=12+(motorW-colW*act.length)/2;
+    var j=Math.floor((e.clientX-r.left-x0)/colW);
+    if(j>=0 && j<act.length){ st2.sel=act[j]; update2(); }
+  }
+});
+stageCv.addEventListener('pointermove',function(e){
+  if(drag && e.pointerId===drag.id){ sim.hT=clamp(drag.p0+(drag.y0-e.clientY)/PX,-2.5,2.5); e.preventDefault(); }
+});
+function endDrag(e){ if(drag && e.pointerId===drag.id) drag=null; }
+stageCv.addEventListener('pointerup',endDrag);
+stageCv.addEventListener('pointercancel',endDrag);
+qa('[data-m1]').forEach(function(b){ b.addEventListener('click',function(){
+  st1.m=+b.dataset.m1; setMassAt(0,st1.m); resetOsc(); sim.hT=0; sim.p=0;
+  qa('[data-m1]').forEach(function(x){ x.setAttribute('aria-pressed',x===b?'true':'false'); });
+}); });
+function update1(){
+  var f=handFreq(), a=amp(0);
+  $('takt1').textContent=f===null?'–':fmt(f,2)+' Hz';
+  $('amp1').textContent=fmt(a,1)+' cm';
+  if(a>8 && !st1.done[st1.m]){
+    st1.done[st1.m]=true;
+    say('msg1','Geschafft: über 8 cm! Merke dir deinen Takt'+(f?' (etwa '+fmt(f,1)+' Hz)':'')+'. Probiere jetzt ein anderes Pendel.',10000);
+  }
+}
+ 
+/* ---------- Stufe 2 ---------- */
+function activeList(){ var r=[]; for(var i=0;i<5;i++) if(st2.active[i]) r.push(i); return r; }
+function missingPreds(){ return activeList().filter(function(i){ return st2.preds[i]===null; }); }
+function calcYmax2(){
+  var mx=0; activeList().forEach(function(i){ mx=Math.max(mx,thPeak(MASSES[i],st2.b,sim.A)); });
+  st2.ymax=niceCeil(mx*1.1);
+}
+function buildToggles2(){
+  var box=$('toggles2'); box.innerHTML='';
+  MASSES.forEach(function(m,i){
+    var b=document.createElement('button'); b.type='button'; b.className='btn chip';
+    b.setAttribute('aria-pressed',st2.active[i]?'true':'false');
+    b.innerHTML='<span class="dot" style="background:var(--r'+(i+1)+')"></span>R'+(i+1);
+    b.title=fmt(m,2)+' kg';
+    b.addEventListener('click',function(){
+      if(st2.active[i] && activeList().length===1) return;
+      st2.active[i]=!st2.active[i];
+      if(!st2.active[st2.sel]) st2.sel=activeList()[0];
+      update2();
+    });
+    box.appendChild(b);
+  });
+}
+function buildChips2(){
+  var box=$('chips2'); box.innerHTML='';
+  activeList().forEach(function(i){
+    var b=document.createElement('button'); b.type='button'; b.className='btn chip';
+    b.setAttribute('aria-pressed',i===st2.sel?'true':'false');
+    b.innerHTML='<span class="dot" style="background:var(--r'+(i+1)+')"></span>R'+(i+1)+' · '+fmt(MASSES[i],2)+' kg';
+    b.addEventListener('click',function(){ st2.sel=i; update2(); });
+    box.appendChild(b);
+  });
+}
+function update2(){
+  calcYmax2(); buildToggles2(); buildChips2(); syncF('f2',sim.f);
+  var miss=missingPreds(), btn=$('btnSweep2');
+  if(st2.sw){ btn.textContent='Durchlauf stoppen'; btn.disabled=false; }
+  else if(!st2.swept && miss.length){ btn.textContent='Erst Vorhersage setzen ('+miss.map(function(i){ return 'R'+(i+1); }).join(', ')+')'; btn.disabled=true; }
+  else { btn.textContent='Frequenzdurchlauf starten'; btn.disabled=false; }
+  var u=st2.unlocked;
+  $('lock2').hidden=u; $('formula2').hidden=!u; $('chkF02').disabled=!u; $('chkTh2').disabled=!u; $('btnUnlock2').hidden=u;
+  $('terms2').hidden=!u;
+  qa('.lockable .lk').forEach(function(el){ el.hidden=u; });
+  qa('.lockable').forEach(function(el){ el.classList.toggle('locked',!u); });
+  buildTable2();
+}
+function unlock2(){ st2.unlocked=true; update2(); }
+$('f2').addEventListener('input',function(){ st2.sw=null; st2.f=setFreq(+this.value); update2(); });
+qa('[data-step2]').forEach(function(b){ b.addEventListener('click',function(){ st2.sw=null; st2.f=setFreq(sim.f+(+b.dataset.step2)); update2(); }); });
+$('b2').addEventListener('input',function(){
+  st2.b=+this.value; setDamp(st2.b); $('b2out').textContent=fmt(st2.b,1)+' N·s/m';
+  var had=st2.pts.some(function(a){ return a.length; });
+  st2.pts=[[],[],[],[],[]]; st2.sw=null; update2();
+  if(had) say('msg2','Messpunkte gelöscht, weil sich die Dämpfung geändert hat. Miss neu und vergleiche.');
+});
+$('chartRes').addEventListener('pointerdown',function(e){
+  var C=charts.chartRes; if(!C.ax) return;
+  var r=this.getBoundingClientRect(), x=e.clientX-r.left;
+  var f=F_MIN+(x-C.ax.L)/C.ax.pw*(F_MAX-F_MIN);
+  if(f<F_MIN-0.05 || f>F_MAX+0.05) return;
+  if(st2.swept){ say('msg2','Deine Vorhersage ist nach dem Durchlauf fest. Vergleiche sie mit der Messung.'); return; }
+  st2.preds[st2.sel]=Math.round(clamp(f,F_MIN,F_MAX)*20)/20;
+  say('msg2','Vorhersage für R'+(st2.sel+1)+': '+fmt(st2.preds[st2.sel],2)+' Hz');
+  var miss=missingPreds();
+  if(miss.length){ st2.sel=miss[0]; }
+  update2();
+});
+$('btnSave2').addEventListener('click',function(){
+  var a=amp(st2.sel), f=Math.round(sim.f*100)/100; recPt(st2.pts[st2.sel],f,{a:a});
+  say('msg2','Punkt gespeichert: R'+(st2.sel+1)+', f = '+fmt(f,2)+' Hz, A = '+fmt(a,1)+' cm'+(isSteady(st2.sel)?'':' (Achtung: noch nicht eingeschwungen)'));
+  buildTable2();
+});
+$('btnClear2').addEventListener('click',function(){ st2.pts=[[],[],[],[],[]]; $('eval2').hidden=true; buildTable2(); say('msg2','Alle Messpunkte gelöscht.'); });
+$('btnSweep2').addEventListener('click',function(){
+  if(st2.sw){ st2.sw=null; update2(); say('msg2','Durchlauf gestoppt.'); return; }
+  var freqs=[]; for(var f=F_MIN;f<=F_MAX+1e-9;f+=0.05) freqs.push(Math.round(f*100)/100);
+  activeList().forEach(function(i){ st2.pts[i]=[]; });
+  $('eval2').hidden=true; resetOsc(); sim.running=true; syncRun();
+  st2.sw={idx:0,freqs:freqs,next:0};
+  update2(); say('msg2','Durchlauf läuft …',4000);
+});
+$('btnUnlock2').addEventListener('click',unlock2);
+function recPt(arr,f,obj){
+  obj.f=f;
+  for(var k=0;k<arr.length;k++){ if(Math.abs(arr[k].f-f)<0.004){ arr[k]=obj; return; } }
+  arr.push(obj); arr.sort(function(p,q){ return p.f-q.f; });
+}
+function sweepTick(now){
+  var sw=st2.sw; if(now<sw.next) return;
+  if(sw.idx>=sw.freqs.length){ finishSweep(); return; }
+  sim.f=sw.freqs[sw.idx]; st2.f=sim.f; syncF('f2',sim.f);
+  var act=activeList(), mmax=0; act.forEach(function(i){ mmax=Math.max(mmax,MASSES[i]); });
+  advance(clamp(6*2*mmax/sim.b,8,40));
+  act.forEach(function(i){ recPt(st2.pts[i],sim.f,{a:amp(i)}); });
+  sw.idx++; sw.next=now+380;
+}
+function finishSweep(){
+  st2.sw=null; var first=!st2.swept; st2.swept=true; st2.unlocked=true;
+  var html='<p><b>Vergleich mit deiner Vorhersage</b></p>';
+  activeList().forEach(function(i){
+    var pts=st2.pts[i]; if(!pts.length) return;
+    var pk=pts.reduce(function(a,b){ return b.a>a.a?b:a; });
+    html+='<p><span class="dot" style="background:var(--r'+(i+1)+')"></span> R'+(i+1)+': Vorhersage '+
+      (st2.preds[i]===null?'–':fmt(st2.preds[i],2)+' Hz')+' · Maximum gemessen bei <b>'+fmt(pk.f,2)+' Hz</b></p>';
+  });
+  if(first) html+='<p>Neu freigeschaltet: Formel, Eigenfrequenzen und Theoriekurven (im Bedienfeld unter „Lösungshilfen“).</p>';
+  $('eval2').innerHTML=html; $('eval2').hidden=false;
+  update2(); say('msg2','Durchlauf fertig.');
+}
+function buildTable2(){
+  var act=activeList().filter(function(i){ return st2.pts[i].length; });
+  if(!act.length){ $('table2').innerHTML='<p class="note">Noch keine Messwerte.</p>'; st2.tsv=''; return; }
+  var fs={}; act.forEach(function(i){ st2.pts[i].forEach(function(p){ fs[p.f.toFixed(2)]=1; }); });
+  var keys=Object.keys(fs).sort(function(a,b){ return a-b; });
+  var head='<tr><th>f<sub>E</sub> in Hz</th>'+act.map(function(i){ return '<th>A(R'+(i+1)+') in cm</th>'; }).join('')+'</tr>';
+  var tsv='f_E in Hz\t'+act.map(function(i){ return 'A(R'+(i+1)+') in cm'; }).join('\t')+'\n';
+  var rows=keys.map(function(k){
+    var cells=act.map(function(i){ var p=st2.pts[i].filter(function(q){ return q.f.toFixed(2)===k; })[0]; return p?fmt(p.a,2):''; });
+    tsv+=fmt(+k,2)+'\t'+cells.join('\t')+'\n';
+    return '<tr><td>'+fmt(+k,2)+'</td>'+cells.map(function(c){ return '<td>'+c+'</td>'; }).join('')+'</tr>';
+  }).join('');
+  $('table2').innerHTML='<table class="data">'+head+rows+'</table>'; st2.tsv=tsv;
+}
+$('btnCopy2').addEventListener('click',function(){
+  var t=st2.tsv||''; if(!t){ say('msg2','Noch keine Messwerte zum Kopieren.'); return; }
+  function fallback(){
+    var ta=document.createElement('textarea'); ta.value=t; document.body.appendChild(ta); ta.select();
+    try{ document.execCommand('copy'); say('msg2','Tabelle kopiert.'); }catch(e){ say('msg2','Kopieren nicht möglich. Markiere die Tabelle von Hand.'); }
+    document.body.removeChild(ta);
+  }
+  try{ navigator.clipboard.writeText(t).then(function(){ say('msg2','Tabelle kopiert. Du kannst sie z. B. in Excel einfügen.'); },fallback); }catch(e){ fallback(); }
+});
+ 
+/* ---------- Stufe 3 ---------- */
+$('f3').addEventListener('input',function(){ st3.f=setFreq(+this.value); syncF('f3',sim.f); });
+qa('[data-step3]').forEach(function(b){ b.addEventListener('click',function(){ st3.f=setFreq(sim.f+(+b.dataset.step3)); syncF('f3',sim.f); }); });
+$('b3').addEventListener('input',function(){
+  st3.b=+this.value; setDamp(st3.b); $('b3out').textContent=fmt(st3.b,1)+' N·s/m';
+  if(st3.pts.length){ st3.pts=[]; say('msg3','Phasenpunkte gelöscht, weil sich die Dämpfung geändert hat.'); }
+});
+$('chkReal3').addEventListener('change',function(){
+  $('ytHint').textContent=this.checked?'Echte Größen: Die Aufhängung bewegt sich nur um 0,5 cm.':'Beide Kurven sind auf die gleiche Höhe gestreckt, damit du den zeitlichen Versatz gut siehst.';
+});
+$('chkPhase3').addEventListener('change',function(){ $('phaseBox3').hidden=!this.checked; requestAnimationFrame(resize); });
+$('btnSave3').addEventListener('click',function(){
+  var p=phiNow();
+  if(p===null || !isSteady(0)){ say('msg3','Warte, bis das Pendel eingeschwungen ist.'); return; }
+  var f=Math.round(sim.f*100)/100; recPt(st3.pts,f,{phi:clamp(p,0,180)});
+  say('msg3','Gespeichert: f = '+fmt(f,2)+' Hz, Δφ = '+fmt(clamp(p,0,180),0)+'°');
+});
+$('btnClear3').addEventListener('click',function(){ st3.pts=[]; say('msg3','Phasenpunkte gelöscht.'); });
+function update3(){
+  if(!$('chkPhase3').checked) return;
+  var p=phiNow(), s=isSteady(0);
+  $('phiOut3').textContent=(p===null)?'–':fmt(clamp(p,0,180),0)+'° ≈ '+fmt(clamp(p,0,180)/360,2)+' T';
+  var el=$('steady3'); el.textContent=s?'eingeschwungen ✓':'schwingt noch ein …'; el.style.color=s?'var(--good)':'var(--muted)';
+}
+ 
+/* ---------- Stufe 4 ---------- */
+qa('[data-tab4]').forEach(function(b){ b.addEventListener('click',function(){ setTab4(b.dataset.tab4); }); });
+$('f4').addEventListener('input',function(){ var f=setFreq(+this.value); syncF('f4',f); if(st4.tab==='mass') st4.fm=f; else st4.fn=f; });
+qa('[data-step4]').forEach(function(b){ b.addEventListener('click',function(){
+  var f=setFreq(sim.f+(+b.dataset.step4)); syncF('f4',f); if(st4.tab==='mass') st4.fm=f; else st4.fn=f;
+}); });
+$('b4').addEventListener('input',function(){ st4.bb=+this.value; setDamp(st4.bb); $('b4out').textContent=fmt(st4.bb,2)+' N·s/m'; $('fbB4').textContent=''; });
+function updateCount4(){ $('count4').textContent=st4.msaves+(st4.msaves===1?' Messpunkt':' Messpunkte'); }
+$('btnSave4').addEventListener('click',function(){
+  var a=amp(0), f=Math.round(sim.f*100)/100; recPt(st4.mpts,f,{a:a}); st4.msaves++; updateCount4();
+  say('msg4','Punkt gespeichert: f = '+fmt(f,2)+' Hz, A = '+fmt(a,2)+' cm'+(isSteady(0)?'':' (noch nicht eingeschwungen)'));
+});
+function fb(id,t,ok){ var el=$(id); el.textContent=t; el.className='feedback'+(ok===true?' ok':ok===false?' bad':''); }
+$('btnCheckM4').addEventListener('click',function(){
+  var v=parseFloat(String($('mIn4').value).replace(',','.'));
+  if(!(v>0)){ fb('fbM4','Bitte eine Masse in kg eingeben, z. B. 0,45.'); return; }
+  var dev=(v-st4.mass)/st4.mass;
+  if(Math.abs(dev)<=0.05){
+    st4.solved=true;
+    fb('fbM4','Treffer! Die Masse ist '+fmt(st4.mass,2)+' kg (Abweichung '+fmt(Math.abs(dev)*100,1)+' %). Du hast '+st4.msaves+' Messpunkte gebraucht. Schaffst du es mit weniger?',true);
+  } else {
+    fb('fbM4','Noch nicht: Dein Wert ist zu '+(dev>0?'groß':'klein')+' (mehr als 5 % daneben). Prüfe Maximum und Rechnung.',false);
+  }
+});
+$('btnNewM4').addEventListener('click',function(){
+  newMass(); $('mIn4').value=''; setTab4('mass'); say('msg4','Neues Pendel mit unbekannter Masse.');
+});
+$('btnCheckB4').addEventListener('click',function(){
+  var a=amp(0);
+  if(!isSteady(0)){ fb('fbB4','Die Brücke schwingt noch ein. Warte, bis sich die Amplitude nicht mehr ändert.'); return; }
+  if(a>=3) fb('fbB4','Zu wenig Dämpfung: '+fmt(a,1)+' cm. Die Brücke schwingt zu stark.',false);
+  else if(sim.b<=0.65) fb('fbB4','Perfekt: '+fmt(a,1)+' cm bei b = '+fmt(sim.b,2)+' N·s/m. Sicher und sparsam!',true);
+  else fb('fbB4','Sicher ('+fmt(a,1)+' cm), aber teuer. Es geht auch mit weniger Dämpfung.',false);
+});
+function update4(){
+  if(st4.tab!=='bridge') return;
+  var s=isSteady(0), a=amp(0);
+  $('ampB4').textContent=fmt(a,1)+' cm';
+  var el=$('steadyB4'); el.textContent=s?'eingeschwungen ✓':'schwingt noch ein …'; el.style.color=s?'var(--good)':'var(--muted)';
+}
+ 
+/* ================= Schleife ================= */
+var last=0, tick=0;
+function frame(now){
+  var dtR=Math.min(0.05,Math.max(0,(now-last)/1000)); last=now;
+  if(stage===1){ if(!drag) sim.hT*=Math.exp(-dtR/0.4); advance(dtR||0.001); }
+  else if(sim.running && dtR>0) advance(dtR*sim.speed);
+  if(stage===2 && st2.sw) sweepTick(now);
+  tick++;
+  if(tick%30===0) readColors();
+  drawStage(); drawCharts();
+  if(tick%6===0){ if(stage===1) update1(); else if(stage===3) update3(); else if(stage===4) update4(); }
+  requestAnimationFrame(frame);
+}
+ 
+readColors();
+setStage(1);
+resize();
+if(window.ResizeObserver){ var ro=new ResizeObserver(function(){ resize(); }); ro.observe(stageCv); }
+window.addEventListener('resize',resize);
+requestAnimationFrame(function(t){ last=t; requestAnimationFrame(frame); });
+})();
+</script>
+</body>
+</html>
+ 
