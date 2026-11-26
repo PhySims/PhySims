@@ -236,6 +236,10 @@ footer{margin-top:18px;color:var(--muted);font-size:12px}
         <li class="lockable"><span class="lk">🔒 </span>Erhöhe die Dämpfung und miss erneut. Wie ändern sich Höhe und Breite der Resonanzkurven?</li>
       </ol>
       <details class="tip"><summary>Tipp zur Vorhersage</summary><p>Erinnere dich an Stufe 1: Musstest du beim schweren Pendel schneller oder langsamer ziehen als beim leichten?</p></details>
+      <details class="tip lockable-tip" id="why2" hidden><summary>Warum ist die Kurve von R2 flacher und breiter?</summary>
+        <p>Beide Pendel werden gleich stark gebremst, aber R2 ist leichter und schwingt schneller. Dadurch verliert es mehr Energie durch Reibung, und der Motor kann es nicht so stark aufschaukeln. Deshalb ist sein Maximum niedriger.</p>
+        <p>Weil R2 so stark gebremst wird, ist es außerdem weniger wählerisch: Es schwingt auch dann noch merklich mit, wenn f<sub>E</sub> nicht genau passt. Deshalb ist seine Kurve breiter.</p>
+      </details>
       <details class="tip" id="terms2" hidden><summary>Fachbegriffe</summary>
         <p><b>Eigenfrequenz f<sub>0</sub>:</b> Frequenz, mit der ein Pendel nach einem Anstoß von selbst schwingt.</p>
         <p><b>Erregerfrequenz f<sub>E</sub>:</b> Frequenz, mit der der Antrieb das Pendel anregt.</p>
@@ -1002,7 +1006,7 @@ function update2(){
   else { btn.textContent='Frequenzdurchlauf starten'; btn.disabled=false; }
   var u=st2.unlocked;
   $('lock2').hidden=u; $('formula2').hidden=!u; $('chkF02').disabled=!u; $('chkTh2').disabled=!u; $('btnUnlock2').hidden=u;
-  $('terms2').hidden=!u;
+  $('terms2').hidden=!u; $('why2').hidden=!u;
   qa('.lockable .lk').forEach(function(el){ el.hidden=u; });
   qa('.lockable').forEach(function(el){ el.classList.toggle('locked',!u); });
   buildTable2();
