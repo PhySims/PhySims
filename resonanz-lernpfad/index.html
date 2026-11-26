@@ -6,7 +6,7 @@
 <meta name="robots" content="noindex, nofollow">
 <title>Resonanz-Lernpfad</title>
 <style>
-/* Lernpfad in vier Stufen: links Versuch und Diagramme, rechts Auftrag und Bedienfeld. */
+/* Lernpfad in fünf Stufen (Stufe 5 = Zusatz): links Versuch und Diagramme, rechts Auftrag und Bedienfeld. */
 :root{
   --bg:#f4f6f3; --surface:#ffffff; --stage:#eef2ef; --ink:#14202b; --muted:#566370; --line:#d5dbd7; --grid:#e3e8e4;
   --accent:#1d5ca6; --accent-ink:#ffffff; --good:#2f8052; --bad:#b83a52; --q:#6b7580;
@@ -38,8 +38,8 @@ h3{font-size:.95rem;margin:14px 0 6px;font-weight:600}
 .back{margin:0 0 8px;font-size:14px}
 .back a{color:var(--accent);text-decoration:none;font-weight:500}
 .back a:hover{text-decoration:underline}
-
-.steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:0 0 16px}
+ 
+.steps{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin:0 0 16px}
 @media (max-width:700px){.steps{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .step{min-height:58px;text-align:left;padding:8px 12px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;cursor:pointer;display:flex;gap:10px;align-items:center}
 .step .num{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--stage);font-weight:700;flex:none;border:1px solid var(--line)}
@@ -47,7 +47,7 @@ h3{font-size:.95rem;margin:14px 0 6px;font-weight:600}
 .step small{display:block;color:var(--muted);font-size:12px;line-height:1.3}
 .step[aria-current="step"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
 .step[aria-current="step"] .num{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
-
+ 
 .layout{display:grid;gap:16px;grid-template-columns:minmax(0,1fr)}
 .main-col,.side{display:grid;gap:16px;align-content:start;min-width:0}
 @media (min-width:980px){ .layout{grid-template-columns:minmax(0,1.55fr) minmax(320px,1fr)} }
@@ -87,7 +87,7 @@ input[type=range]{width:100%;height:32px;margin:0;accent-color:var(--accent)}
 .formula small{display:block;width:100%;font-family:var(--font-body);font-size:12px;font-weight:400;color:var(--muted)}
 input:disabled{opacity:.45}
 sub{font-size:.75em}
-
+ 
 .task ol{padding-left:1.35em;margin:8px 0 0}
 .task li{margin:0 0 10px}
 .task li.locked{color:var(--muted)}
@@ -114,6 +114,11 @@ table.data th,table.data td{border-bottom:1px solid var(--line);padding:4px 8px;
 table.data th{font-family:var(--font-body);font-weight:600}
 .subtabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:4px}
 .subtabs .btn{flex:1}
+.pair{display:grid;gap:16px;grid-template-columns:minmax(0,1fr)}
+.pair.wide{grid-column:1 / -1}
+@media (min-width:640px){ .pair{grid-template-columns:minmax(0,1fr) minmax(0,1fr)} }
+@media (min-width:980px){ .pair{grid-template-columns:minmax(0,1.55fr) minmax(320px,1fr)} }
+.pair .card details.tip:first-of-type{margin-top:0}
 [hidden]{display:none !important}
 footer{margin-top:18px;color:var(--muted);font-size:12px}
 </style>
@@ -123,24 +128,25 @@ footer{margin-top:18px;color:var(--muted);font-size:12px}
 <header>
   <p class="back"><a href="../">← Alle Simulationen</a></p>
   <h1>Resonanz-Lernpfad</h1>
-  <p class="lede">Federpendel, deren Aufhängung auf und ab bewegt wird. Arbeite die vier Stufen der Reihe nach durch: erst selbst ausprobieren, dann vorhersagen und messen, dann erklären.</p>
+  <p class="lede">Federpendel, deren Aufhängung auf und ab bewegt wird. Arbeite die Stufen der Reihe nach durch: erst selbst ausprobieren, dann vorhersagen und messen, dann erklären. Stufe 5 ist ein Zusatz für alle, die schneller fertig sind.</p>
 </header>
-
+ 
 <nav class="steps" aria-label="Stufen">
   <button class="step" type="button" data-stage="1"><span class="num">1</span><span><b>Selbst anregen</b><small>Du bist der Antrieb</small></span></button>
   <button class="step" type="button" data-stage="2"><span class="num">2</span><span><b>Vorhersagen &amp; messen</b><small>Resonanzkurven</small></span></button>
   <button class="step" type="button" data-stage="3"><span class="num">3</span><span><b>Warum gerade bei f<sub>0</sub>?</b><small>Der richtige Moment</small></span></button>
   <button class="step" type="button" data-stage="4"><span class="num">4</span><span><b>Challenges</b><small>Wissen anwenden</small></span></button>
+  <button class="step" type="button" data-stage="5"><span class="num">5</span><span><b>Schwingungstilger</b><small>Zusatz: Hochhaus schützen</small></span></button>
 </nav>
-
+ 
 <main class="layout">
   <div class="main-col">
     <section class="card" aria-labelledby="h-stage">
       <h2 id="h-stage">Versuch</h2>
       <p class="hint" id="stageHint">Alle Federn haben D = 20 N/m.</p>
-      <canvas id="stage" role="img" aria-label="Federpendel an einer Aufhängung, die auf und ab bewegt wird. Unter jedem Pendel zeigt ein Balken die Amplitude."></canvas>
+      <canvas id="stage" role="img" aria-label="Versuchsfeld: Federpendel an einer bewegten Aufhängung; in Stufe 5 ein schwankendes Hochhaus mit Tilgerpendel in der obersten Etage."></canvas>
     </section>
-
+ 
     <!-- Stufe 2: Resonanzkurve -->
     <section class="card" data-panel="2" aria-labelledby="h-res">
       <h2 id="h-res">Resonanzkurve</h2>
@@ -159,7 +165,7 @@ footer{margin-top:18px;color:var(--muted);font-size:12px}
         <div class="row" style="margin:8px 0"><button class="btn" id="btnCopy2" type="button">Tabelle kopieren</button></div>
       </details>
     </section>
-
+ 
     <!-- Stufe 3: optionales y-t-Diagramm (Vertiefung) -->
     <section class="card" data-panel="3" id="ytCard3" aria-labelledby="h-yt">
       <h2 id="h-yt">Vertiefung: Aufhängung und Pendel im y-t-Diagramm</h2>
@@ -167,7 +173,7 @@ footer{margin-top:18px;color:var(--muted);font-size:12px}
       <canvas id="chartYT" class="chart" role="img" aria-label="Auslenkung von Aufhängung und Pendel über der Zeit"></canvas>
       <label class="check"><input type="checkbox" id="chkReal3"> Echte Größen anzeigen (nicht gestreckt)</label>
     </section>
-
+ 
     <!-- Stufe 4: Diagramme der Challenges -->
     <section class="card" data-panel="4" id="chartCard4" aria-labelledby="h-c4">
       <h2 id="h-c4">Messung</h2>
@@ -185,8 +191,9 @@ footer{margin-top:18px;color:var(--muted);font-size:12px}
       </div>
       <p class="msg" id="msg4" role="status"></p>
     </section>
+ 
   </div>
-
+ 
   <div class="side">
     <!-- ================= Stufe 1 ================= -->
     <section class="card task" data-panel="1" aria-labelledby="h-t1">
@@ -217,7 +224,7 @@ footer{margin-top:18px;color:var(--muted);font-size:12px}
       <div class="field"><div class="row"><button class="btn" type="button" data-reset>Ruhe herstellen</button></div></div>
       <p class="msg" id="msg1" role="status"></p>
     </section>
-
+ 
     <!-- ================= Stufe 2 ================= -->
     <section class="card task" data-panel="2" aria-labelledby="h-t2">
       <h2 id="h-t2">Auftrag 2 · Vorhersagen und messen</h2>
@@ -288,7 +295,7 @@ footer{margin-top:18px;color:var(--muted);font-size:12px}
         <button class="linkbtn" id="btnUnlock2" type="button">Lehrkraft: ohne Durchlauf freischalten</button>
       </div>
     </section>
-
+ 
     <!-- ================= Stufe 3 ================= -->
     <section class="card task" data-panel="3" aria-labelledby="h-t3">
       <h2 id="h-t3">Auftrag 3 · Der richtige Moment</h2>
@@ -358,7 +365,7 @@ footer{margin-top:18px;color:var(--muted);font-size:12px}
         </div>
       </div>
     </section>
-
+ 
     <!-- ================= Stufe 4 ================= -->
     <section class="card task" data-panel="4" aria-labelledby="h-t4">
       <h2 id="h-t4">Auftrag 4 · Challenges</h2>
@@ -418,11 +425,69 @@ footer{margin-top:18px;color:var(--muted);font-size:12px}
         <p class="feedback" id="fbM4" role="status"></p>
       </div>
     </section>
+ 
+    <!-- ================= Stufe 5 ================= -->
+    <section class="card" data-panel="5" aria-labelledby="h-c5c">
+      <h2 id="h-c5c">Bedienfeld</h2>
+      <div class="row">
+        <button class="btn primary" type="button" data-run>Pause</button>
+        <button class="btn" type="button" data-reset>Ruhe herstellen</button>
+      </div>
+      <div class="field">
+        <span class="lbl" style="font-weight:500">Tilger</span>
+        <div class="seg" role="group" aria-label="Tilger an oder aus">
+          <button class="btn" type="button" data-til="0" aria-pressed="true">Tilger aus</button>
+          <button class="btn" type="button" data-til="1" aria-pressed="false">Tilger an</button>
+        </div>
+      </div>
+      <div class="field">
+        <span class="lbl" style="font-weight:500">Abstimmung des Tilgers</span>
+        <div class="seg" role="group" aria-label="Tilger abgestimmt oder verstimmt">
+          <button class="btn" type="button" data-tune="1" aria-pressed="true">abgestimmt (Seil 11 m)</button>
+          <button class="btn" type="button" data-tune="0" aria-pressed="false">verstimmt (Seil 16 m)</button>
+        </div>
+      </div>
+      <div class="field">
+        <span class="lbl" style="font-weight:500">Zeitraffer</span>
+        <div class="seg" role="group" aria-label="Simulationstempo">
+          <button class="btn" type="button" data-speed="1">1× (echt)</button>
+          <button class="btn" type="button" data-speed="10">10×</button>
+          <button class="btn" type="button" data-speed="20">20×</button>
+        </div>
+        <p class="note" style="margin:0">In echter Zeit dauert eine Schwingung fast 7 Sekunden, und nach dem Umschalten vergehen einige Minuten, bis sich alles eingependelt hat. Im Zeitraffer 10× sind es etwa 10 bis 30 Sekunden.</p>
+      </div>
+    </section>
   </div>
+ 
+    <!-- Stufe 5: Auftrag und Lösungen unter der Simulation -->
+    <div class="pair wide" data-panel="5">
+    <section class="card task" aria-labelledby="h-t5">
+      <h2 id="h-t5">Auftrag 5 · Schwingungstilger (Zusatz)</h2>
+      <p>Taipei 101 ist 508 m hoch. Bei Erdbeben und Taifunen schwingt der Turm hin und her, eine Schwingung dauert fast 7 Sekunden (f<sub>0</sub> = 0,15 Hz). In der Simulation bebt der Boden genau mit dieser Frequenz. Zwischen dem 87. und 92. Stock hängt der <b>Tilger</b>: eine Stahlkugel mit <b>660 t</b> an Seilen, die mit <b>Dämpfern</b> verbunden ist. Die Bewegungen sind im Bild stark vergrößert.</p>
+      <ol>
+        <li>Der Tilger ist aus. Warum schwingt das Hochhaus so stark?</li>
+        <li>Schalte den Tilger an. Beobachte zuerst die Kugel: Was bringt sie zum Schwingen?</li>
+        <li>Beobachte jetzt das Hochhaus. Was passiert mit seiner Amplitude?</li>
+        <li>Beobachte die Dämpfer. Was passiert dort mit der Energie der Kugel?</li>
+        <li>Fasse zusammen: Ergänze die Kette „Boden → Hochhaus → … → …“ und erkläre jeden Pfeil in einem Satz.</li>
+        <li>Schalte auf „Tilger verstimmt“: Die Kugel hängt jetzt an einem zu langen Seil. Wie stark schwingen Kugel und Hochhaus? Erkläre mit dem Begriff Resonanz, warum der Tilger zum Hochhaus passen muss.</li>
+      </ol>
+    </section>
+    <section class="card task" aria-labelledby="h-s5">
+      <h2 id="h-s5">Tipp und Lösungen</h2>
+      <details class="tip"><summary>Tipp</summary><p>Die Kugel hat dieselbe Eigenfrequenz wie das Hochhaus. Denk an Stufe 3: Wer schubst hier wen?</p></details>
+      <details class="tip"><summary>Lösung zu 1</summary><p>Der Boden bebt genau mit der Eigenfrequenz des Hochhauses. Das ist Resonanz: Der Antrieb schubst immer im richtigen Moment, deshalb schwingt das Hochhaus sehr stark. Im Modell sind es oben etwa 20 cm, obwohl sich der Boden nur um 4 mm bewegt.</p></details>
+      <details class="tip"><summary>Lösung zu 2</summary><p>Das schwingende Hochhaus ist der Antrieb für die Kugel. Weil die Kugel dieselbe Eigenfrequenz hat, wird sie in Resonanz angeregt und schwingt stark, im Modell etwa 1 m weit.</p></details>
+      <details class="tip"><summary>Lösung zu 3</summary><p>Die Amplitude des Hochhauses wird deutlich kleiner, im Modell von etwa 20 cm auf etwa 6 cm. Die Kugel nimmt dem Hochhaus in jeder Schwingung Energie ab.</p></details>
+      <details class="tip"><summary>Lösung zu 4</summary><p>Die Dämpfer bremsen die Kugel. Dabei wandeln sie ihre Bewegungsenergie in Wärme um, im Modell knapp 20 kW, also so viel wie etwa zehn Heizlüfter.</p></details>
+      <details class="tip"><summary>Lösung zu 5</summary><p><b>Boden → Hochhaus → Tilger → Wärme.</b> Das Hochhaus regt den Tilger in Resonanz an und gibt dabei Energie an ihn ab. Die Dämpfer des Tilgers wandeln diese Energie in Wärme um. So bleibt für das Hochhaus weniger Energie übrig, und es schwingt schwächer.</p></details>
+      <details class="tip"><summary>Lösung zu 6</summary><p>Mit dem längeren Seil hat die Kugel eine kleinere Eigenfrequenz als das Hochhaus. Das Hochhaus regt sie deshalb nicht mehr in Resonanz an: Abgestimmt schwingt die Kugel rund 16-mal so weit wie das Hochhaus, verstimmt nur noch gut doppelt so weit. Damit kann sie das Hochhaus kaum noch beruhigen: Es schwingt mit etwa 18 cm fast so stark wie ganz ohne Tilger. Ein Tilger hilft nur, wenn seine Eigenfrequenz genau zu der des Hochhauses passt.</p></details>
+    </section>
+    </div>
 </main>
 <footer>Eigener Nachbau, angelehnt an die PhET-Simulation „Resonanz“. Läuft im Browser, ohne Flash. Es werden keine Daten gespeichert oder übertragen.</footer>
 </div>
-
+ 
 <script>
 (function(){
 'use strict';
@@ -441,12 +506,12 @@ function thPhase(m,b,f){
 function thPeak(m,b,A){
   var pk=0; for(var f=F_MIN;f<=F_MAX+1e-9;f+=0.005){ var a=thAmp(m,b,A,f); if(a>pk) pk=a; } return pk;
 }
-
+ 
 var sim={n:0,m:[],w0sq:[],gam:[],U:[],V:[],b:0.5,A:0.5,f:1,phase:0,t:0,drive:'motor',p:0,hT:0,speed:1,running:true,
   bId:[],bMax:[],ampHist:[],ampNext:0,hist:[],histNext:0,lastP:0,lastU:0,pUpLast:-1,phiList:[],tState:0,tUps:[],changeT:0};
-
+ 
 function configure(masses,b,drive){
-  sim.n=masses.length; sim.m=masses.slice(); sim.drive=drive; sim.A=0.5;
+  sim.n=masses.length; sim.m=masses.slice(); sim.drive=drive; sim.A=0.5; sim.coupled=false; sim.heat=0; sim.hq=[]; sim.hqNext=0;
   sim.w0sq=[]; sim.U=[]; sim.V=[]; sim.bId=[]; sim.bMax=[]; sim.ampHist=[];
   for(var i=0;i<sim.n;i++){
     sim.w0sq.push(D/masses[i]); sim.U.push(0); sim.V.push(0);
@@ -460,7 +525,7 @@ function setDamp(b){ sim.b=b; sim.gam=sim.m.map(function(m){ return b/m; }); sim
 function setMassAt(i,m){ sim.m[i]=m; sim.w0sq[i]=D/m; sim.gam[i]=sim.b/m; sim.changeT=sim.t; }
 function resetOsc(){
   for(var i=0;i<sim.n;i++){ sim.U[i]=0; sim.V[i]=0; sim.bId[i].fill(-1); sim.bMax[i].fill(0); sim.ampHist[i]=[]; }
-  sim.hist=[]; sim.phiList=[]; sim.pUpLast=-1; sim.tUps=[]; sim.changeT=sim.t;
+  sim.hist=[]; sim.phiList=[]; sim.pUpLast=-1; sim.tUps=[]; sim.changeT=sim.t; sim.heat=0; sim.hq=[]; sim.hqNext=0;
 }
 function rk4(i,dt,p0,pm,p1){
   var w=sim.w0sq[i], g=sim.gam[i], u0=sim.U[i], v0=sim.V[i];
@@ -472,10 +537,34 @@ function rk4(i,dt,p0,pm,p1){
   sim.U[i]=u0+dt/6*(k1u+2*k2u+2*k3u+k4u);
   sim.V[i]=v0+dt/6*(k1v+2*k2v+2*k3v+k4v);
 }
+/* Stufe 5: Gebäude (Index 0) mit angehängtem Tilger (Index 1), gekoppelt über Feder d und Dämpfer c.
+   M x'' = -D(x-p) - b x' + d(y-x) + c(y'-x')     m y'' = -d(y-x) - c(y'-x')
+   Ohne Tilger läuft er nur als Mitläufer (y = x) und das Gebäude schwingt allein. */
+function rk4c(dt,p0,pm,p1){
+  if(!st5.on){ rk4(0,dt,p0,pm,p1); sim.U[1]=sim.U[0]; sim.V[1]=sim.V[0]; return; }
+  var M=sim.m[0], m=sim.m[1], wG=K5/M, gG=sim.b/M, dk=st5.d, c=st5.c;
+  function acc(x,v,y,w,p){ var F=dk*(y-x)+c*(w-v); return [-wG*(x-p)-gG*v+F/M, -F/m]; }
+  var x0=sim.U[0], v0=sim.V[0], y0=sim.U[1], w0=sim.V[1];
+  var a1=acc(x0,v0,y0,w0,p0);
+  var x2=x0+dt/2*v0, v2=v0+dt/2*a1[0], y2=y0+dt/2*w0, w2=w0+dt/2*a1[1], a2=acc(x2,v2,y2,w2,pm);
+  var x3=x0+dt/2*v2, v3=v0+dt/2*a2[0], y3=y0+dt/2*w2, w3=w0+dt/2*a2[1], a3=acc(x3,v3,y3,w3,pm);
+  var x4=x0+dt*v3, v4=v0+dt*a3[0], y4=y0+dt*w3, w4=w0+dt*a3[1], a4=acc(x4,v4,y4,w4,p1);
+  sim.U[0]=x0+dt/6*(v0+2*v2+2*v3+v4); sim.V[0]=v0+dt/6*(a1[0]+2*a2[0]+2*a3[0]+a4[0]);
+  sim.U[1]=y0+dt/6*(w0+2*w2+2*w3+w4); sim.V[1]=w0+dt/6*(a1[1]+2*a2[1]+2*a3[1]+a4[1]);
+  /* Wärme im Dämpfer: Q = ∫ c·(Relativgeschwindigkeit)² dt, Auslenkungen sind in cm, also ·1e-4 für J */
+  var r0=w0-v0, r1=sim.V[1]-sim.V[0]; sim.heat+=c*0.5*(r0*r0+r1*r1)*dt*1e-4;
+}
+function heatPower(){
+  var h=sim.hq; if(!st5.on||h.length<3) return 0;
+  var half=1/(2*sim.f), win=Math.ceil(1/half)*half, t0=sim.t-win, k=0; /* Fenster = ganze Halbperioden, denn die Leistung schwankt mit 2f */
+  while(k<h.length-1 && h[k].t<t0) k++;
+  var a=h[k], b=h[h.length-1]; return b.t-a.t>0.2?(b.Q-a.Q)/(b.t-a.t):0;
+}
 function stepOnce(dt,p0,pm,p1){
   var i;
-  for(i=0;i<sim.n;i++) rk4(i,dt,p0,pm,p1);
+  if(sim.coupled) rk4c(dt,p0,pm,p1); else for(i=0;i<sim.n;i++) rk4(i,dt,p0,pm,p1);
   var tPrev=sim.t; sim.t+=dt;
+  if(sim.coupled && sim.t>=sim.hqNext){ sim.hq.push({t:sim.t,Q:sim.heat}); sim.hqNext=sim.t+0.05; while(sim.hq.length && sim.hq[0].t<sim.t-8) sim.hq.shift(); }
   var id=Math.floor(sim.t/BK), slot=id%NB;
   for(i=0;i<sim.n;i++){
     if(sim.bId[i][slot]!==id){ sim.bId[i][slot]=id; sim.bMax[i][slot]=0; }
@@ -496,7 +585,7 @@ function stepOnce(dt,p0,pm,p1){
   }
   sim.lastP=p1; sim.lastU=u;
   if(sim.t>=sim.histNext){
-    sim.hist.push({t:sim.t,p:p1,u:u,v:sim.V[0]}); sim.histNext=sim.t+1/60;
+    sim.hist.push({t:sim.t,p:p1,u:u,v:sim.V[0],tl:(sim.n>1?sim.U[1]:0)}); sim.histNext=sim.t+1/60;
     while(sim.hist.length && sim.hist[0].t<sim.t-8) sim.hist.shift();
   }
   if(sim.t>=sim.ampNext){
@@ -546,7 +635,7 @@ function handFreq(){
   var u=sim.tUps; if(u.length<3 || sim.t-u[u.length-1]>2.5) return null;
   return (u.length-1)/(u[u.length-1]-u[0]);
 }
-
+ 
 /* ================= Hilfen ================= */
 var $=function(id){ return document.getElementById(id); };
 var qa=function(sel,root){ return Array.prototype.slice.call((root||document).querySelectorAll(sel)); };
@@ -561,16 +650,22 @@ function say(id,t,ms){
   var el=$(id); el.textContent=t; clearTimeout(msgTimers[id]);
   if(t) msgTimers[id]=setTimeout(function(){ el.textContent=''; },ms||7000);
 }
-
+ 
 /* ================= Zustand der Stufen ================= */
 var stage=1;
 var st1={m:0.5,done:{}};
 var st2={sel:0,pred:null,pts:[[],[]],b:0.3,f:1.0,unlocked:false,swept:false,sw:null,ymax:5};
 var st3={b:0.5,f:0.5,part:'A',flash:null,doneA:false};
 var st4={tab:'mass',mass:0,mpts:[],fm:1.0,fn:1.01};
+/* Stufe 5: Taipei 101 (Modell mit einem Freiheitsgrad, erste Eigenschwingung).
+   Wirksame Masse so, dass der Tilger 0,26 % davon ist; Eigenfrequenz 0,15 Hz; Eigendämpfung 1 %.
+   Tilger: 660 t, Dämpfung nach Den Hartog optimal (etwa 3 %). Positionen intern in cm. */
+var F0_5=0.15, MT5=660e3, M5=MT5/0.0026, K5=M5*Math.pow(2*Math.PI*F0_5,2), B5=2*0.01*Math.sqrt(K5*M5),
+    A5=0.4, C5=2*0.031*MT5*2*Math.PI*F0_5;
+var st5={on:false,f:F0_5,fT:F0_5,d:MT5*Math.pow(2*Math.PI*F0_5,2),c:C5,sw:null};
 function newMass(){ st4.mass=Math.round((0.15+Math.random()*0.75)*100)/100; st4.mpts=[]; }
 newMass();
-
+ 
 /* ================= Zeichnen ================= */
 var stageCv=$('stage'), STAGE_H=470, sctx=null, sW=600;
 var charts={chartRes:{h:290},chartYT:{h:220},chartMass:{h:290},chartAmpT:{h:290}};
@@ -619,7 +714,7 @@ function arrow(ctx,x,y,len,color){
   ctx.beginPath(); ctx.moveTo(x,tip); ctx.lineTo(x-6,tip-s*9); ctx.lineTo(x+6,tip-s*9); ctx.closePath(); ctx.fill();
   ctx.lineCap='butt';
 }
-
+ 
 function rigCfg(){
   var c={idx:[],colors:[],labels:[],subs:[],sel:-1,ymax:10,goal:null,limit:null,arrows:false,lamp:false,energy:false,f0:false,top:''};
   if(stage===1){
@@ -639,22 +734,23 @@ function rigCfg(){
   if(!c.top) c.top='Motor: f = '+fmt(sim.f,2)+' Hz';
   return c;
 }
-
+ 
 var drag=null;
 function drawStage(){
   if(!sctx) return;
+  if(stage===5){ drawStage5(); return; }
   var ctx=sctx, W=sW, H=STAGE_H, c=rigCfg(), motor=sim.drive==='motor';
   var barY=72, yC=250, gBase=404, gH=46, xR=motor?W-56:W-12;
   ctx.clearRect(0,0,W,H); ctx.fillStyle=COL.stage; ctx.fillRect(0,0,W,H);
   ctx.textBaseline='alphabetic';
   ctx.fillStyle=COL.muted; ctx.font='500 13px '+FONT; ctx.textAlign='left';
   ctx.fillText(c.top,14,24);
-
+ 
   var by=barY-sim.p*PX;
   ctx.strokeStyle=COL.line; ctx.lineWidth=1; ctx.setLineDash([4,4]);
   ctx.beginPath(); ctx.moveTo(12,barY); ctx.lineTo(xR,barY); ctx.stroke(); ctx.setLineDash([]);
   ctx.fillStyle=COL.ink; rrect(ctx,12,by-6,xR-12,12,4); ctx.fill();
-
+ 
   if(motor){
     var cx=W-30, r=20, rp=sim.A*PX, px=cx+rp*Math.sin(sim.phase), py=barY-rp*Math.cos(sim.phase);
     ctx.fillStyle=COL.surface; ctx.strokeStyle=COL.muted; ctx.lineWidth=2;
@@ -677,9 +773,9 @@ function drawStage(){
       ctx.fillText('↕ irgendwo im Feld ziehen',hx-14,by+34); ctx.globalAlpha=1;
     }
   }
-
+ 
   ctx.strokeStyle=COL.line; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(10,gBase); ctx.lineTo(W-10,gBase); ctx.stroke();
-
+ 
   var k=c.idx.length, areaL=12, areaW=(motor?W-64:W-12)-areaL;
   var colW=Math.min(areaW/k,220), x0=areaL+(areaW-colW*k)/2, clipped=false;
   for(var j=0;j<k;j++){
@@ -688,7 +784,7 @@ function drawStage(){
     if(c.labels[j].length>2) mw=Math.max(mw,Math.min(colW-14,70));
     var dRaw=sim.U[i]*PX, d=clamp(dRaw,-140,140); if(Math.abs(dRaw)>140) clipped=true;
     var cy=yC-d, top=cy-mh/2, sel=(i===c.sel);
-
+ 
     ctx.strokeStyle=COL.muted; ctx.globalAlpha=0.55; ctx.lineWidth=1; ctx.setLineDash([3,3]);
     ctx.beginPath(); ctx.moveTo(cxp-mw/2-8,yC); ctx.lineTo(cxp+mw/2+8,yC); ctx.stroke();
     ctx.setLineDash([]); ctx.globalAlpha=1;
@@ -704,7 +800,7 @@ function drawStage(){
     if(sel){ ctx.strokeStyle=COL.ink; ctx.lineWidth=3; rrect(ctx,cxp-mw/2-1.5,top-1.5,mw+3,mh+3,7); ctx.stroke(); }
     ctx.fillStyle=COL.onr; ctx.font='600 14px '+FONT; ctx.textAlign='center'; ctx.textBaseline='middle';
     ctx.fillText(c.labels[j],cxp,cy+1); ctx.textBaseline='alphabetic';
-
+ 
     if(c.arrows){
       var w=2*Math.PI*sim.f, vp=-Math.sin(sim.phase);
       var a0=Math.max(amp(i),0.05), vm=clamp(sim.V[i]/(a0*w),-1,1);
@@ -713,7 +809,7 @@ function drawStage(){
       ctx.font='500 11px '+FONT; ctx.fillStyle=COL.muted; ctx.textAlign='center';
       ctx.fillText('Aufhängung',cxp-mw/2-22,by+66); ctx.fillText('Pendel',cxp+mw/2+22,cy+46);
     }
-
+ 
     var a=amp(i), bh=clamp(a/c.ymax,0,1)*gH, bw=Math.min(28,colW-20);
     ctx.globalAlpha=0.35; ctx.fillStyle=COL.line; ctx.fillRect(cxp-bw/2,gBase-gH,bw,gH); ctx.globalAlpha=1;
     ctx.fillStyle=c.colors[j]; ctx.fillRect(cxp-bw/2,gBase-bh,bw,bh);
@@ -730,7 +826,7 @@ function drawStage(){
     ctx.font='600 13px '+MONO; ctx.fillText(fmt(a,1)+' cm',cxp,gBase+36);
     if(c.f0){ ctx.fillStyle=COL.muted; ctx.font='500 12px '+MONO; ctx.fillText('f₀ '+fmt(f0of(m),2)+' Hz',cxp,gBase+53); }
   }
-
+ 
   var pillX=x0+colW/2+70, pillY=yC-16, pillW=Math.min(170,W-(motor?64:12)-pillX-6);
   if(c.lamp){
     var help=sim.p*sim.V[0]>0;
@@ -774,7 +870,7 @@ function helpFraction(){
   for(var k=h.length-1;k>=0 && h[k].t>=t0;k--){ n++; if(h[k].p*h[k].v>0) p++; }
   return n>10?p/n:null;
 }
-
+ 
 function axes(ctx,W,H,o){
   var L=52,R=14,T=14,B=46,pw=W-L-R,ph=H-T-B;
   function X(x){ return L+(x-o.xmin)/(o.xmax-o.xmin)*pw; }
@@ -830,7 +926,7 @@ function emptyText(ctx,ax,t){
   ctx.fillText(t,ax.L+ax.pw/2,ax.T+ax.ph*0.4); ctx.textBaseline='alphabetic'; ctx.textAlign='left';
 }
 var RES_AX={xmin:F_MIN,xmax:F_MAX,xstep:0.5,ymin:0,xlabel:'Erregerfrequenz f_E in Hz',ylabel:'Amplitude in cm'};
-
+ 
 function drawChartRes(){
   var C=charts.chartRes; if(!C.ctx) return;
   var ctx=C.ctx, ax=axes(ctx,C.w,C.h,Object.assign({},RES_AX,{ymax:st2.ymax,ystep:niceStep(st2.ymax)}));
@@ -886,16 +982,152 @@ function drawChartAmpT(){
   for(k=0;k<n;k++){ var t=sim.t-(n-1-k)*0.1; if(t<t0) continue; var x=ax.X(t), y=ax.Y(h[k]); if(first){ ctx.moveTo(x,y); first=false; } else ctx.lineTo(x,y); }
   ctx.stroke();
 }
+ 
+/* ---------- Stufe 5: Zeichnen (Hochhaus mit Tilger) ---------- */
+var PXR=0.5, PXL=5.5, G_ACC=9.81, PXG5=15, PXB5=3.5;   /* Pixel pro cm (Kugel relativ, Boden, Hochhaus) und Pixel pro m Seil */
+function thAmp5(f){ var w=2*Math.PI*f, d=K5-M5*w*w; return A5*K5/Math.sqrt(d*d+B5*B5*w*w); }
+function drawStage5(){
+  var ctx=sctx, W=sW, H=STAGE_H;
+  var yG=498, yTop=108, bh=yG-yTop, crown=185, hc=crown/bh;
+  var bw=clamp(W*0.26,110,175), lw=W<520?132:176;
+  var xc=lw+(W-lw)/2, swayMax=Math.max(30,Math.min(100,(W-lw-bw)/2-14));
+  ctx.clearRect(0,0,W,H); ctx.fillStyle=COL.stage; ctx.fillRect(0,0,W,H); ctx.textBaseline='alphabetic';
+  ctx.fillStyle=COL.muted; ctx.font='500 13px '+FONT; ctx.textAlign='left';
+  ctx.fillText('Boden bebt mit der Eigenfrequenz von Taipei 101 (f₀ = '+fmt(sim.f,2)+' Hz) · Zeitraffer '+fmt(sim.speed,0)+'×',14,24);
+  ctx.font='500 11px '+FONT;
+  ctx.fillText('Bewegungen im Bild stark vergrößert',14,40);
+ 
+  var pg=clamp(sim.p*PXG5,-30,30), xt=clamp(sim.U[0]*PXB5,-swayMax,swayMax);
+  var clipped=Math.abs(sim.U[0]*PXB5)>swayMax;
+  function sh(h){ return pg+(xt-pg)*(h<hc?Math.pow(h/hc,1.6):1); }
+  function hw(h){ return bw/2*(1-0.1*h); }
+ 
+  /* Boden und Antrieb */
+  ctx.strokeStyle=COL.line; ctx.lineWidth=1; ctx.setLineDash([4,4]);
+  ctx.beginPath(); ctx.moveTo(12,yG+7); ctx.lineTo(W-12,yG+7); ctx.stroke(); ctx.setLineDash([]);
+  ctx.fillStyle=COL.ink; ctx.globalAlpha=0.85; rrect(ctx,12+pg,yG,W-24,14,3); ctx.fill(); ctx.globalAlpha=1;
+  ctx.strokeStyle=COL.muted; ctx.lineWidth=1; ctx.globalAlpha=0.6;
+  for(var hx=24;hx<W-24;hx+=18){ ctx.beginPath(); ctx.moveTo(hx+pg,yG+14); ctx.lineTo(hx+pg-8,yG+24); ctx.stroke(); }
+  ctx.globalAlpha=1;
+  var mcx=W-34, mcy=yG+46, rr=18, rp=sim.A*PXG5, mpx=mcx+rp*Math.cos(sim.phase), mpy=mcy-rp*Math.sin(sim.phase);
+  ctx.fillStyle=COL.surface; ctx.strokeStyle=COL.muted; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.arc(mcx,mcy,rr,0,Math.PI*2); ctx.fill(); ctx.stroke();
+  ctx.strokeStyle=COL.muted; ctx.lineWidth=1.5; ctx.beginPath(); ctx.moveTo(mcx,mcy); ctx.lineTo(mpx,mpy); ctx.stroke();
+  ctx.fillStyle=COL.accent; ctx.beginPath(); ctx.arc(mpx,mpy,4.5,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle=COL.muted; ctx.font='500 11px '+FONT; ctx.textAlign='center'; ctx.fillText('Motor',mcx,mcy+rr+14); ctx.textAlign='left';
+ 
+  /* Hochhaus */
+  var N=26, k, h, y;
+  ctx.beginPath();
+  for(k=0;k<=N;k++){ h=k/N; y=yG-h*bh; ctx.lineTo(xc+sh(h)-hw(h),y); }
+  for(k=N;k>=0;k--){ h=k/N; y=yG-h*bh; ctx.lineTo(xc+sh(h)+hw(h),y); }
+  ctx.closePath(); ctx.fillStyle=COL.r[1]; ctx.globalAlpha=0.92; ctx.fill(); ctx.globalAlpha=1;
+  ctx.strokeStyle=COL.ink; ctx.lineWidth=1.5; ctx.lineJoin='round'; ctx.stroke();
+  /* Fenster unterhalb der Tilger-Etage */
+  ctx.fillStyle=COL.surface; ctx.globalAlpha=0.55;
+  var rows=11, cols=4;
+  for(var r=0;r<rows;r++){
+    h=(r+0.6)/(rows+1.1)*(1-hc)*0.98; y=yG-h*bh-6;
+    for(var c2=0;c2<cols;c2++){
+      var cw2=hw(h)*2/(cols*1.55), gap=(hw(h)*2-cols*cw2)/(cols+1);
+      ctx.fillRect(xc+sh(h)-hw(h)+gap+c2*(cw2+gap),y-9,cw2,12);
+    }
+  }
+  ctx.globalAlpha=1;
+  /* Antenne */
+  ctx.strokeStyle=COL.ink; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(xc+xt,yTop); ctx.lineTo(xc+xt,yTop-26); ctx.stroke();
+ 
+  /* Tilger-Etage */
+  var cw=Math.min(bw*0.9-6,hw(1)*2-14), chTop=yTop+16, chH=150, cx0=xc+xt;
+  ctx.fillStyle=COL.stage; rrect(ctx,cx0-cw/2,chTop,cw,chH,4); ctx.fill();
+  ctx.strokeStyle=COL.ink; ctx.lineWidth=1.5; rrect(ctx,cx0-cw/2,chTop,cw,chH,4); ctx.stroke();
+  var ay=chTop+8, Lpx=(G_ACC/Math.pow(2*Math.PI*st5.fT,2))*PXL;
+  ctx.strokeStyle=COL.ink; ctx.lineWidth=3; ctx.beginPath(); ctx.moveTo(cx0-12,ay); ctx.lineTo(cx0+12,ay); ctx.stroke();
+  if(st5.on){
+    var rel=clamp((sim.U[1]-sim.U[0])*PXR,-Lpx*0.92,Lpx*0.92), bx=cx0+rel, by=ay+Math.sqrt(Math.max(0,Lpx*Lpx-rel*rel)), br=12;
+    var Pnow=heatPower(), heat=clamp(Pnow/20000,0,1);
+    /* Dämpfer links und rechts */
+    var wl=cx0-cw/2+3, wr=cx0+cw/2-3, cyl=34;
+    [[wl,1],[wr,-1]].forEach(function(d){
+      var wx=d[0], dir=d[1], ex=wx+dir*cyl;
+      ctx.fillStyle=COL.muted; ctx.globalAlpha=0.9;
+      ctx.fillRect(Math.min(wx,ex),by-7,cyl,14); ctx.globalAlpha=1;
+      ctx.fillStyle=COL.bad; ctx.globalAlpha=0.15+0.8*heat; ctx.fillRect(Math.min(wx,ex),by-7,cyl,14); ctx.globalAlpha=1;
+      ctx.strokeStyle=COL.ink; ctx.lineWidth=1.5; ctx.strokeRect(Math.min(wx,ex)+0.5,by-6.5,cyl-1,13);
+      ctx.lineWidth=3; ctx.beginPath(); ctx.moveTo(ex,by); ctx.lineTo(bx-dir*br,by); ctx.stroke();
+      /* Wärme-Wellen */
+      if(heat>0.04){
+        var tt=performance.now()/400; ctx.strokeStyle=COL.bad; ctx.lineWidth=2; ctx.lineCap='round';
+        for(var q=0;q<3;q++){
+          var hxw=Math.min(wx,ex)+6+q*11, ph=(tt+q*0.7)%1;
+          ctx.globalAlpha=Math.min(1,heat*1.4)*(1-ph*0.8);
+          ctx.beginPath();
+          for(var u=0;u<=12;u++){ var yy=by-9-ph*16-u*1.5, xx=hxw+Math.sin(u/2+tt*4+q)*2.2; if(u) ctx.lineTo(xx,yy); else ctx.moveTo(xx,yy); }
+          ctx.stroke();
+        }
+        ctx.globalAlpha=1; ctx.lineCap='butt';
+      }
+    });
+    /* Seil und Kugel */
+    ctx.strokeStyle=COL.ink; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(cx0,ay); ctx.lineTo(bx,by); ctx.stroke();
+    ctx.fillStyle=COL.r[3]; ctx.beginPath(); ctx.arc(bx,by,br,0,Math.PI*2); ctx.fill();
+    ctx.strokeStyle=COL.ink; ctx.lineWidth=1.5; ctx.stroke();
+    ctx.fillStyle=COL.surface; ctx.globalAlpha=0.5; ctx.beginPath(); ctx.arc(bx-4,by-4,3.2,0,Math.PI*2); ctx.fill(); ctx.globalAlpha=1;
+    function tag(txt,x,y,color,weight){
+      ctx.font=weight+' 11px '+FONT; var tw=ctx.measureText(txt).width;
+      ctx.fillStyle=COL.surface; ctx.globalAlpha=0.9; rrect(ctx,x-tw/2-4,y-11,tw+8,16,4); ctx.fill(); ctx.globalAlpha=1;
+      ctx.fillStyle=color; ctx.textAlign='center'; ctx.fillText(txt,x,y+1);
+    }
+    if(cw>=140){ tag('Dämpfer',cx0-cw/2+22,chTop+chH+22,COL.muted,'500'); tag('Dämpfer',cx0+cw/2-22,chTop+chH+22,COL.muted,'500'); }
+    else tag('Dämpfer',cx0,chTop+chH+22,COL.muted,'500');
+    if(heat>0.04) tag('Bewegung → Wärme',cx0,chTop+chH+44,COL.bad,'600');
+    ctx.textAlign='left';
+  } else {
+    ctx.strokeStyle=COL.muted; ctx.globalAlpha=0.7; ctx.lineWidth=1.5; ctx.setLineDash([5,4]);
+    ctx.beginPath(); ctx.moveTo(cx0,ay); ctx.lineTo(cx0,ay+Lpx); ctx.stroke();
+    ctx.beginPath(); ctx.arc(cx0,ay+Lpx,12,0,Math.PI*2); ctx.stroke(); ctx.setLineDash([]); ctx.globalAlpha=1;
+    ctx.fillStyle=COL.muted; ctx.font='500 12px '+FONT; ctx.textAlign='center'; ctx.fillText('Tilger aus',cx0,chTop+chH-10); ctx.textAlign='left';
+  }
+  ctx.fillStyle=COL.ink; ctx.font='600 12px '+FONT; ctx.textAlign='left';
+  if(W>=520) ctx.fillText('Tilger-Etage',cx0+hw(1)+10,chTop+14);
+ 
+  /* Balken links */
+  var gBase=440, gH=200, aG=amp(0), aT=st5.on?amp(1):0, Pm=st5.on?heatPower():0, ymax=25, ymaxT=150;
+  function bar(x,v,vmax,color,label,val,faint){
+    var bw2=26, bh2=clamp(v/vmax,0,1)*gH;
+    ctx.globalAlpha=0.35; ctx.fillStyle=COL.line; ctx.fillRect(x-bw2/2,gBase-gH,bw2,gH); ctx.globalAlpha=faint?0.35:1;
+    ctx.fillStyle=color; ctx.fillRect(x-bw2/2,gBase-bh2,bw2,bh2); ctx.globalAlpha=1;
+    var fs=lw<140?10:11;
+    ctx.fillStyle=COL.ink; ctx.font='500 '+fs+'px '+FONT; ctx.textAlign='center'; ctx.fillText(label,x,gBase+16);
+    ctx.font='600 '+(fs+1)+'px '+MONO; ctx.fillText(lw<140?val.replace(/ (cm|kW)$/,''):val,x,gBase+32);
+  }
+  var bx0=lw<140?24:32, step=lw<140?40:58;
+  ctx.fillStyle=COL.ink; ctx.font='600 12px '+FONT; ctx.textAlign='left'; ctx.font='600 '+(lw<140?11:12)+'px '+FONT; ctx.fillText(lw<140?'Amplitude (cm) · Wärme (kW)':'Amplitude · Wärmeleistung',12,gBase-gH-12);
+  bar(bx0,aG,ymax,COL.r[1],'Hochhaus',fmt(aG,1)+' cm',false);
+  bar(bx0+step,aT,ymaxT,COL.r[3],'Tilger',st5.on?fmt(aT,0)+' cm':'–',!st5.on);
+  bar(bx0+2*step,Pm/1000,25,COL.bad,'Wärme',st5.on?fmt(Pm/1000,1)+' kW':'–',!st5.on);
+  if(st5.on){
+    var ref=thAmp5(sim.f), my=gBase-clamp(ref/ymax,0,1)*gH;
+    ctx.strokeStyle=COL.ink; ctx.lineWidth=2; ctx.setLineDash([5,3]);
+    ctx.beginPath(); ctx.moveTo(bx0-17,my); ctx.lineTo(bx0+17,my); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle=COL.ink; ctx.font='500 10px '+FONT; ctx.textAlign='left';
+    ctx.fillText('ohne Tilger '+fmt(ref,1),12,my-5);
+  }
+  if(clipped){ ctx.textAlign='right'; ctx.fillStyle=COL.ink; ctx.font='500 12px '+FONT; ctx.fillText('Anzeige begrenzt',W-14,H-8); }
+  ctx.textAlign='left';
+}
 function drawCharts(){
   if(stage===2) drawChartRes();
   else if(stage===3){ if(!$('ytCard3').hidden) drawChartYT(); }
   else if(stage===4){ if(st4.tab==='mass') drawChartMass(); else if(st4.tab==='nod') drawChartAmpT(); }
 }
-
+ 
 /* ================= Stufen wechseln ================= */
 function setStage(k){
   stage=k; drag=null;
+  STAGE_H=(k===5?580:470); stageCv.style.height=STAGE_H+'px';
   if(st2.sw && k!==2) st2.sw=null;
+  if(st5.sw && k!==5) st5.sw=null;
   qa('.step').forEach(function(b){ if(+b.dataset.stage===k) b.setAttribute('aria-current','step'); else b.removeAttribute('aria-current'); });
   qa('[data-panel]').forEach(function(el){ el.hidden=(+el.dataset.panel!==k); });
   stageCv.classList.toggle('hand',k===1);
@@ -909,10 +1141,13 @@ function setStage(k){
     $('stageHint').textContent='Alle Federn haben D = 20 N/m. Tippe auf ein Pendel, um es auszuwählen.';
   } else if(k===3){
     setPart3(st3.part,true); setSpeed(1);
-  } else {
+  } else if(k===4){
     setTab4(st4.tab,true);
+  } else {
+    setup5();
   }
   if(k!==3 && sim.speed===0.5) setSpeed(1);
+  if(k===5) setSpeed(10); else if(sim.speed>4) setSpeed(1);
   syncRun(); syncSpeed();
   requestAnimationFrame(resize);
   try{ window.scrollTo({top:0,behavior:'smooth'}); }catch(e){}
@@ -933,7 +1168,7 @@ function setTab4(t,silent){
   $('fbM4').textContent='';
   if(!silent) requestAnimationFrame(resize);
 }
-
+ 
 /* ================= Bedienung allgemein ================= */
 function syncRun(){ qa('[data-run]').forEach(function(b){ b.textContent=sim.running?'Pause':'Start'; }); }
 function setSpeed(s){ sim.speed=s; syncSpeed(); }
@@ -943,10 +1178,12 @@ qa('.step').forEach(function(b){ b.addEventListener('click',function(){ setStage
 qa('[data-run]').forEach(function(b){ b.addEventListener('click',function(){ sim.running=!sim.running; syncRun(); }); });
 qa('[data-reset]').forEach(function(b){ b.addEventListener('click',function(){
   resetOsc(); sim.hT=0; sim.p=0; if(stage===2 && st2.sw){ st2.sw=null; update2(); }
+  if(stage===5 && st5.sw){ st5.sw=null; update5(); }
+  sim.heat=0; sim.hq=[];
 }); });
 qa('[data-speed]').forEach(function(b){ b.addEventListener('click',function(){ setSpeed(+b.dataset.speed); }); });
 function setFreq(f){ sim.f=clamp(Math.round(f*100)/100,F_MIN,F_MAX); sim.changeT=sim.t; return sim.f; }
-
+ 
 /* ---------- Stufe 1 ---------- */
 stageCv.addEventListener('pointerdown',function(e){
   if(stage===1){
@@ -980,7 +1217,7 @@ function update1(){
     say('msg1','Geschafft: über 8 cm! Merke dir deinen Takt'+(f?' (etwa '+fmt(f,1)+' Hz)':'')+'. Probiere jetzt ein anderes Pendel.',10000);
   }
 }
-
+ 
 /* ---------- Stufe 2 ---------- */
 function activeList(){ return [0,1]; }
 function calcYmax2(){
@@ -1108,7 +1345,7 @@ $('btnCopy2').addEventListener('click',function(){
   }
   try{ navigator.clipboard.writeText(t).then(function(){ say('msg2','Tabelle kopiert. Du kannst sie z. B. in Excel einfügen.'); },fallback); }catch(e){ fallback(); }
 });
-
+ 
 /* ---------- Stufe 3 ---------- */
 var F0_3=f0of(0.5), PUSH=10, B_FREE=0.15;
 function setPart3(part,silent){
@@ -1166,7 +1403,7 @@ function update3(){
     st3.doneA=true; say('msg3','Geschafft: über 8 cm! Wann hast du geschubst?',9000);
   }
 }
-
+ 
 /* ---------- Stufe 4 ---------- */
 qa('[data-tab4]').forEach(function(b){ b.addEventListener('click',function(){ setTab4(b.dataset.tab4); }); });
 $('f4').addEventListener('input',function(){ var f=setFreq(+this.value); syncF('f4',f); if(st4.tab==='mass') st4.fm=f; else st4.fn=f; });
@@ -1192,6 +1429,31 @@ $('btnCheckM4').addEventListener('click',function(){
 $('btnNewM4').addEventListener('click',function(){
   newMass(); $('mIn4').value=''; setTab4('mass'); say('msg4','Neues Pendel mit unbekannter Masse.');
 });
+/* ---------- Stufe 5 ---------- */
+function setup5(){
+  configure([M5,MT5],B5,'motor'); sim.coupled=true; sim.A=A5; sim.f=F0_5;
+  sim.w0sq[0]=K5/M5;   /* ohne Tilger rechnet rk4 mit w0sq: hier die echte Steifigkeit statt D */
+  sim.U[1]=sim.U[0]; sim.V[1]=sim.V[0];
+  advance(700); sim.heat=0; sim.hq=[];   /* beim Öffnen schon eingeschwungen (Eigendämpfung nur 1 %) */
+  $('stageHint').textContent='Modell von Taipei 101 (508 m): f₀ = 0,15 Hz, eine Schwingung dauert also fast 7 s. Tilger: Stahlkugel mit 660 t an Seilen, dazu Dämpfer.';
+  update5();
+}
+var FT_OFF5=0.126;   /* verstimmter Tilger: Seil zu lang, kleinere Eigenfrequenz */
+function update5(){
+  qa('[data-til]').forEach(function(b){ b.setAttribute('aria-pressed',(+b.dataset.til===(st5.on?1:0))?'true':'false'); });
+  var tuned=Math.abs(st5.fT-F0_5)<1e-6;
+  qa('[data-tune]').forEach(function(b){ b.setAttribute('aria-pressed',(+b.dataset.tune===(tuned?1:0))?'true':'false'); });
+}
+function setTune(tuned){
+  st5.fT=tuned?F0_5:FT_OFF5; st5.d=MT5*Math.pow(2*Math.PI*st5.fT,2);
+  sim.changeT=sim.t; sim.heat=0; sim.hq=[]; update5();
+}
+qa('[data-tune]').forEach(function(b){ b.addEventListener('click',function(){ setTune(b.dataset.tune==='1'); }); });
+function setTilger(on){
+  if(on && !st5.on){ sim.U[1]=sim.U[0]; sim.V[1]=sim.V[0]; }
+  st5.on=on; sim.changeT=sim.t; sim.heat=0; sim.hq=[]; update5();
+}
+qa('[data-til]').forEach(function(b){ b.addEventListener('click',function(){ setTilger(b.dataset.til==='1'); }); });
 /* ================= Schleife ================= */
 var last=0, tick=0;
 function frame(now){
@@ -1205,7 +1467,7 @@ function frame(now){
   if(tick%6===0){ if(stage===1) update1(); else if(stage===3) update3(); }
   requestAnimationFrame(frame);
 }
-
+ 
 readColors();
 setStage(1);
 resize();
@@ -1216,3 +1478,4 @@ requestAnimationFrame(function(t){ last=t; requestAnimationFrame(frame); });
 </script>
 </body>
 </html>
+ 
